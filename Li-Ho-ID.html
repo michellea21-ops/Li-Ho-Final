@@ -52,6 +52,7 @@ const backBtn = document.querySelector('.back-button');
 let currentPage = 'menu';
 let backgroundImage = new Image();
 let isImageLoaded = false;
+let isFontLoaded = false;
 
 const menuButtons = {
   play: { x:0.409, y:0.486, width:0.195, height:0.148 },
@@ -91,9 +92,11 @@ whiteScreen.addEventListener('click', () => {
 
 /* menu */
 function loadMenu(){
+  console.log('loadMenu() called');
   currentPage = 'menu';
   backBtn.style.display = 'none';
   backgroundImage.src = 'Images/Menu.svg';
+  console.log('Menu page loaded, currentPage:', currentPage);
 }
 function drawMenu(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -102,9 +105,11 @@ function drawMenu(){
 
 /* pengaturan */
 function loadPengaturan(){
+  console.log('loadPengaturan() called');
   currentPage = 'pengaturan';
   backBtn.style.display = 'block';
   backgroundImage.src = 'Images/Pengaturan.svg';
+  console.log('Pengaturan page loaded, currentPage:', currentPage);
 }
 function drawPengaturan(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -155,7 +160,7 @@ canvas.addEventListener('click',(e)=>{
     for(const [name,btn] of Object.entries(menuButtons)){
       if(relX>=btn.x&&relX<=btn.x+btn.width&&relY>=btn.y&&relY<=btn.y+btn.height){
         if(name==='main'){window.location.href='Pages/Kategori.html';}
-        else if(name==='pengaturan'){loadPengaturan();}
+        else if(name==='pengaturan'){console.log('Pengaturan button clicked'); loadPengaturan();}
         else if(name==='keluar'){if(confirm('Yakin keluar?'))alert('Terima kasih sudah bermain! 再見 (Zài jiàn)!');}
       }
     }
@@ -215,6 +220,43 @@ window.addEventListener('resize',resizeAll);
 })();
 
 (function loop(){resizeAll();requestAnimationFrame(loop);})();
+
+/* === Font loading debug === */
+document.fonts.ready.then(() => {
+  console.log('All fonts loaded:', document.fonts.size);
+  document.fonts.forEach(font => {
+    console.log(`Font: ${font.family}, Status: ${font.status}`);
+  });
+
+  // Force redraw after fonts load
+  if (isImageLoaded) {
+    if (currentPage === 'menu') drawMenu();
+    else if (currentPage === 'pengaturan') drawPengaturan();
+  }
+});
+
+// Preload font before any canvas drawing
+const fontFace = new FontFace('SuperFuntime', 'url(Font/SuperFuntime.ttf)');
+fontFace.load().then(font => {
+  document.fonts.add(font);
+  isFontLoaded = true;
+  console.log('SuperFuntime font loaded successfully');
+
+  // Redraw everything after font loads
+  if (isImageLoaded) {
+    if (currentPage === 'menu') drawMenu();
+    else if (currentPage === 'pengaturan') drawPengaturan();
+  }
+}).catch(err => {
+  console.error('Font loading failed:', err);
+  isFontLoaded = true; // Allow fallback to Arial
+});
+
+/* === Back button handler === */
+function goBack() {
+  loadMenu();
+  backgroundImage.src = 'Images/Menu.svg';
+}
 </script>
 </body>
 </html>
