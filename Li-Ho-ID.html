@@ -129,7 +129,7 @@ function drawPengaturan(){
   const lang = pengaturanAreas.languageDropdown;
   const lx = drawX + drawW*lang.x, ly = drawY + drawH*lang.y, lw = drawW*lang.width, lh = drawH*lang.height;
   ctx.fillStyle = '#6c2d00'; ctx.fillRect(lx, ly, lw, lh);
-  ctx.fillStyle = '#fff'; ctx.font = `bold ${Math.floor(drawH*0.035)}px Luckiest Guy`;
+  ctx.fillStyle = '#fff'; ctx.font = `bold ${Math.floor(drawH*0.035)}px "Luckiest Guy", Arial`;
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillText(currentLanguage === 'id' ? 'Indonesian' : 'English', lx+lw/2, ly+lh/2);
 
@@ -141,7 +141,7 @@ function drawPengaturan(){
   const thumbX = vx+fillW-8, thumbY=vy+vh*0.2, thumbSize=vh*0.6;
   ctx.fillStyle='#fff'; ctx.strokeStyle='#42c148'; ctx.lineWidth=2;
   ctx.fillRect(thumbX, thumbY, 16, thumbSize); ctx.strokeRect(thumbX, thumbY, 16, thumbSize);
-  ctx.fillStyle='#333'; ctx.font=`bold ${Math.floor(drawH*0.025)}px Luckiest Guy`; ctx.textAlign='center';
+  ctx.fillStyle='#333'; ctx.font=`bold ${Math.floor(drawH*0.025)}px "Luckiest Guy", Arial`; ctx.textAlign='center';
   ctx.fillText(currentVolume+'%', vx+vw+40, vy+vh/2);
 
   const save = pengaturanAreas.saveButton;
