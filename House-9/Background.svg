@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2410.21 1179.49">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #f9ece1;
+      }
+
+      .cls-2 {
+        fill: #fffef1;
+      }
+
+      .cls-3 {
+        fill: #ffd19c;
+      }
+
+      .cls-4 {
+        fill: #8b4a00;
+      }
+
+      .cls-5 {
+        fill: #fff1ac;
+      }
+
+      .cls-6 {
+        fill: #d7ecff;
+      }
+
+      .cls-7 {
+        fill: #b99266;
+      }
+
+      .cls-8 {
+        fill: #683800;
+      }
+
+      .cls-9 {
+        fill: #ff9ad6;
+      }
+
+      .cls-10 {
+        fill: #b8bdff;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <rect class="cls-7" y="747.93" width="2410.21" height="431.56"/>
+    <rect class="cls-1" width="2410.21" height="747.93"/>
+    <ellipse class="cls-5" cx="1023.55" cy="998.27" rx="808.6" ry="155.12"/>
+    <rect class="cls-8" x="171.6" y="49.91" width="500.65" height="330.96"/>
+    <rect class="cls-6" x="212.27" y="93.39" width="420.72" height="246.82"/>
+    <rect class="cls-2" x="765.63" y="65.27" width="199.65" height="102.9"/>
+    <rect class="cls-3" x="965.28" y="208.87" width="191.97" height="112.11"/>
+    <rect class="cls-9" x="1228.58" y="111.35" width="125.94" height="113.65"/>
+    <rect class="cls-10" x="1477.91" y="47.61" width="155.12" height="241.12"/>
+    <rect class="cls-4" x="1864.4" y="251.87" width="43" height="552.89"/>
+    <rect class="cls-4" x="2114.73" y="251.87" width="43" height="552.89"/>
+    <rect class="cls-4" x="1864.4" y="403.91" width="293.34" height="29.18"/>
+    <rect class="cls-4" x="1864.4" y="569.78" width="293.34" height="29.18"/>
+    <rect class="cls-4" x="1864.4" y="230.37" width="293.34" height="29.18"/>
+  </g>
+</svg>
