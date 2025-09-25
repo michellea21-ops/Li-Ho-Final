@@ -150,7 +150,7 @@ function drawSettings(){
   ctx.fillStyle = '#6c2d00';
   ctx.fillRect(lx, ly, lw, lh);
   ctx.fillStyle = '#fff';
-  ctx.font = `bold ${Math.floor(drawH * 0.035)}px Arial`;
+  ctx.font = `bold ${Math.floor(drawH * 0.035)}px SuperFuntime, Arial`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(currentLanguage === 'en' ? 'English' : 'Indonesian', lx + lw/2, ly + lh/2);
@@ -170,7 +170,7 @@ function drawSettings(){
   ctx.fillRect(thumbX, thumbY, 16, thumbSize);
   ctx.strokeRect(thumbX, thumbY, 16, thumbSize);
   ctx.fillStyle = '#333';
-  ctx.font = `bold ${Math.floor(drawH * 0.025)}px Arial`;
+  ctx.font = `bold ${Math.floor(drawH * 0.025)}px SuperFuntime, Arial`;
   ctx.textAlign = 'center';
   ctx.fillText(currentVolume + '%', vx + vw + 40, vy + vh/2);
 
@@ -183,7 +183,7 @@ function drawSettings(){
   ctx.lineWidth = 3;
   ctx.strokeRect(sx, sy, sw, sh);
   ctx.fillStyle = '#fff';
-  ctx.font = `bold ${Math.floor(drawH * 0.035)}px Arial`;
+  ctx.font = `bold ${Math.floor(drawH * 0.035)}px SuperFuntime, Arial`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('Save Settings', sx + sw/2, sy + sh/2);
