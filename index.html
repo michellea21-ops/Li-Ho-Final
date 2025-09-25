@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>LiHo! | Learning Hokkien</title>
+<script>
+// Auto-redirect based on saved language preference
+(function() {
+  const savedLanguage = localStorage.getItem('hokkienGameLanguage');
+  if (savedLanguage === 'id') {
+    window.location.replace('Li-Ho-ID.html');
+  } else {
+    window.location.replace('Li-Ho-EN.html');
+  }
+})();
+</script>
+</head>
+<body>
+  <p>Redirecting...</p>
+</body>
+</html>
