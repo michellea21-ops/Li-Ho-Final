@@ -8,12 +8,9 @@
   @font-face {
     font-family: 'SuperFuntime';
     src: url('Font/SuperFuntime.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
   }
   body, html {
-    margin:0; padding:0; height:100%; overflow:hidden; background:#ffffff; font-family:'SuperFuntime', Arial, sans-serif;
+    margin:0; padding:0; height:100%; overflow:hidden; background:#ffffff; font-family: 'SuperFuntime', sans-serif;
   }
   /* layar putih & logo intro */
   #whiteScreen { position:fixed; inset:0; background:#ffffff; z-index:30; }
@@ -24,11 +21,16 @@
   /* canvas utama */
   #gameCanvas { display:block; width:100%; height:100%; background:#000; cursor:pointer; }
 
+  /* force font loading */
+  * {
+    font-family: 'SuperFuntime', sans-serif !important;
+  }
+
   /* tombol kembali (hanya tampil di settings) */
   .back-button {
     position:absolute; top:20px; left:20px; z-index:40; background:rgba(255,255,255,0.9);
     border:2px solid #333; border-radius:15px; padding:10px 20px; cursor:pointer; font-size:16px; font-weight:bold;
-    transition:all .2s ease; display:none;
+    transition:all .2s ease; display:none; font-family: 'SuperFuntime', sans-serif !important;
   }
   .back-button:hover { background:#fff; transform:scale(1.03); }
 </style>
@@ -320,6 +322,29 @@ function goBack() {
   loadMenu();                 // panggil fungsi loadMenu() yang udah ada
   backgroundImage.src = 'Images/Mainmenu.svg'; // pastikan gambar menu dimuat
 }
+
+/* === Font loading debug === */
+document.fonts.ready.then(() => {
+  console.log('All fonts loaded:', document.fonts.size);
+  document.fonts.forEach(font => {
+    console.log(`Font: ${font.family}, Status: ${font.status}`);
+  });
+
+  // Force redraw after fonts load
+  if (isImageLoaded) {
+    if (currentPage === 'menu') drawMenu();
+    else if (currentPage === 'settings') drawSettings();
+  }
+});
+
+// Try to preload font
+const fontFace = new FontFace('SuperFuntime', 'url(Font/SuperFuntime.ttf)');
+fontFace.load().then(font => {
+  document.fonts.add(font);
+  console.log('SuperFuntime font loaded successfully');
+}).catch(err => {
+  console.error('Font loading failed:', err);
+});
 
 </script>
 
