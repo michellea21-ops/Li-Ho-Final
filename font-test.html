@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Font Loading Test</title>
+    <style>
+        @font-face {
+            font-family: 'SuperFuntime1';
+            src: url('Font/SuperFuntime.ttf') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'SuperFuntime2';
+            src: url('./Font/SuperFuntime.ttf') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'SuperFuntime3';
+            src: url('/Font/SuperFuntime.ttf') format('truetype');
+        }
+
+        body {
+            padding: 20px;
+            font-size: 24px;
+        }
+
+        .test1 { font-family: 'SuperFuntime1', sans-serif; }
+        .test2 { font-family: 'SuperFuntime2', sans-serif; }
+        .test3 { font-family: 'SuperFuntime3', sans-serif; }
+        .default { font-family: Arial, sans-serif; }
+    </style>
+</head>
+<body>
+    <h1>Font Loading Test</h1>
+
+    <p class="default">This is Arial (default font)</p>
+    <p class="test1">Test 1: Relative path - Font/SuperFuntime.ttf</p>
+    <p class="test2">Test 2: Relative with dot - ./Font/SuperFuntime.ttf</p>
+    <p class="test3">Test 3: Absolute path - /Font/SuperFuntime.ttf</p>
+
+    <h2>Direct Font URL Test:</h2>
+    <p>Try accessing: <a href="/Font/SuperFuntime.ttf" target="_blank">/Font/SuperFuntime.ttf</a></p>
+
+    <script>
+        // Check if fonts are loaded
+        document.fonts.ready.then(() => {
+            console.log('Fonts loaded:', document.fonts.size);
+            document.fonts.forEach(font => {
+                console.log(`Font: ${font.family}, Status: ${font.status}`);
+            });
+        });
+    </script>
+</body>
+</html>
