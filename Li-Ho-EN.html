@@ -62,6 +62,7 @@ const backBtn = document.querySelector('.back-button');
 let currentPage = 'menu'; // 'menu' or 'settings'
 let backgroundImage = new Image();
 let isImageLoaded = false;
+let isFontLoaded = false;
 
 /* Main menu clickable zones (relative) */
 const menuButtons = {
@@ -127,6 +128,12 @@ function loadSettings(){
 function drawSettings(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
+  // Wait for font to load before drawing text
+  if (!isFontLoaded) {
+    setTimeout(() => drawSettings(), 100);
+    return;
+  }
+
   // Fit the Setting.svg inside canvas similarly to original code (contain)
   const aspect = backgroundImage.width / backgroundImage.height;
   let drawW, drawH, drawX, drawY;
@@ -150,7 +157,12 @@ function drawSettings(){
   ctx.fillStyle = '#6c2d00';
   ctx.fillRect(lx, ly, lw, lh);
   ctx.fillStyle = '#fff';
-  ctx.font = `bold ${Math.floor(drawH * 0.035)}px SuperFuntime, Arial`;
+
+  // Test font loading
+  const testFont = `bold ${Math.floor(drawH * 0.035)}px SuperFuntime, Arial`;
+  ctx.font = testFont;
+  console.log('Canvas font set to:', testFont);
+
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(currentLanguage === 'en' ? 'English' : 'Indonesian', lx + lw/2, ly + lh/2);
@@ -337,13 +349,21 @@ document.fonts.ready.then(() => {
   }
 });
 
-// Try to preload font
+// Preload font before any canvas drawing
 const fontFace = new FontFace('SuperFuntime', 'url(Font/SuperFuntime.ttf)');
 fontFace.load().then(font => {
   document.fonts.add(font);
+  isFontLoaded = true;
   console.log('SuperFuntime font loaded successfully');
+
+  // Redraw everything after font loads
+  if (isImageLoaded) {
+    if (currentPage === 'menu') drawMenu();
+    else if (currentPage === 'settings') drawSettings();
+  }
 }).catch(err => {
   console.error('Font loading failed:', err);
+  isFontLoaded = true; // Allow fallback to Arial
 });
 
 </script>
