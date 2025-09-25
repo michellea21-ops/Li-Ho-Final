@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 109.57 147.05">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #b8ab95;
+      }
+
+      .cls-2, .cls-3 {
+        fill: #998f63;
+      }
+
+      .cls-3 {
+        stroke: #565429;
+        stroke-miterlimit: 10;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <path class="cls-2" d="M94.62,147.03H18.43c-.67.05-7.49.42-11.9-5-3.36-4.12-3.09-8.84-3-9.9V37.03C14.85,26.36,26.19,15.7,37.52,5.03c19.03-.33,38.06-.67,57.1-1,.67-.05,7.49-.42,11.9,5,3.36,4.12,3.09,8.84,3,9.9v113.19c0,8.23-6.67,14.9-14.9,14.9Z"/>
+      <path class="cls-1" d="M41.52,14.03c2.67,8.33,5.33,16.67,8,25h44c.42-9.15.71-16.11,1-20,.06-.86.22-2.78-1-4-1.18-1.18-3.06-1.11-4-1h-48Z"/>
+      <rect class="cls-3" x="7.26" y="15.91" width="22.48" height="6" rx="1.28" ry="1.28" transform="translate(-7.93 17.69) rotate(-42.98)"/>
+      <rect class="cls-2" x="-1.91" y="9.23" width="31.98" height="8.53" rx="1.28" ry="1.28" transform="translate(-5.42 13.22) rotate(-42.98)"/>
+      <rect class="cls-3" x="34.52" y="72.03" width="45" height="45"/>
+      <path class="cls-3" d="M34.52,72.03c-3.33-4-6.67-8-10-12"/>
+      <path class="cls-3" d="M89.55,128.89c-3.33-4-6.67-8-10-12"/>
+      <path class="cls-3" d="M79.55,71.89c3.33-4,6.67-8,10-12"/>
+      <path class="cls-3" d="M24.55,128.89c3.33-4,6.67-8,10-12"/>
+    </g>
+  </g>
+</svg>

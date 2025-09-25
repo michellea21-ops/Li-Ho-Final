@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 98">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #cde8ff;
+      }
+
+      .cls-2 {
+        fill: #706cff;
+      }
+
+      .cls-3 {
+        font-family: MyriadPro-Regular, 'Myriad Pro';
+        font-size: 10px;
+      }
+
+      .cls-4 {
+        fill: #a09dff;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <rect class="cls-4" y="19" width="71" height="79"/>
+      <path class="cls-2" d="M0,19c1.33-2,2.67-4,4-6h72c-1.67,2-3.33,4-5,6H0Z"/>
+      <path class="cls-2" d="M41,13l-3,6c11-4.33,22-8.67,33-13l3-6c-11,4.33-22,8.67-33,13Z"/>
+      <rect class="cls-1" x="8" y="30" width="55" height="63"/>
+      <text class="cls-3" transform="translate(10.01 39.9)"><tspan x="0" y="0">D</tspan></text>
+      <text class="cls-3" transform="translate(16.67 45.54)"><tspan x="0" y="0">e</tspan></text>
+      <text class="cls-3" transform="translate(21.67 53.54)"><tspan x="0" y="0">t</tspan></text>
+      <text class="cls-3" transform="translate(26.5 58.54)"><tspan x="0" y="0">e</tspan></text>
+      <text class="cls-3" transform="translate(32.5 63.54)"><tspan x="0" y="0">r</tspan></text>
+      <text class="cls-3" transform="translate(35.5 69.54)"><tspan x="0" y="0">g</tspan></text>
+      <text class="cls-3" transform="translate(41.5 77.54)"><tspan x="0" y="0">e</tspan></text>
+      <text class="cls-3" transform="translate(49.5 82.54)"><tspan x="0" y="0">n</tspan></text>
+      <text class="cls-3" transform="translate(56.35 89.54)"><tspan x="0" y="0">t</tspan></text>
+    </g>
+  </g>
+</svg>
