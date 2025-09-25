@@ -4,13 +4,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>LiHo! | Learning Hokkien</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Matemasie&display=swap" rel="stylesheet">
 <style>
-  @font-face {
-    font-family: 'SuperFuntime';
-    src: url('Font/SuperFuntime.ttf') format('truetype');
-  }
   body, html {
-    margin:0; padding:0; height:100%; overflow:hidden; background:#ffffff; font-family: 'SuperFuntime', sans-serif;
+    margin:0; padding:0; height:100%; overflow:hidden; background:#ffffff; font-family: 'Matemasie', sans-serif;
   }
   /* layar putih & logo intro */
   #whiteScreen { position:fixed; inset:0; background:#ffffff; z-index:30; }
@@ -23,14 +22,14 @@
 
   /* force font loading */
   * {
-    font-family: 'SuperFuntime', sans-serif !important;
+    font-family: 'Matemasie', sans-serif !important;
   }
 
   /* tombol kembali (hanya tampil di settings) */
   .back-button {
     position:absolute; top:20px; left:20px; z-index:40; background:rgba(255,255,255,0.9);
     border:2px solid #333; border-radius:15px; padding:10px 20px; cursor:pointer; font-size:16px; font-weight:bold;
-    transition:all .2s ease; display:none; font-family: 'SuperFuntime', sans-serif !important;
+    transition:all .2s ease; display:none; font-family: 'Matemasie', sans-serif !important;
   }
   .back-button:hover { background:#fff; transform:scale(1.03); }
 </style>
@@ -163,7 +162,7 @@ function drawSettings(){
   ctx.fillStyle = '#fff';
 
   // Test font loading
-  const testFont = `bold ${Math.floor(drawH * 0.035)}px SuperFuntime, Arial`;
+  const testFont = `bold ${Math.floor(drawH * 0.035)}px Matemasie, Arial`;
   ctx.font = testFont;
   console.log('Canvas font set to:', testFont);
 
@@ -186,7 +185,7 @@ function drawSettings(){
   ctx.fillRect(thumbX, thumbY, 16, thumbSize);
   ctx.strokeRect(thumbX, thumbY, 16, thumbSize);
   ctx.fillStyle = '#333';
-  ctx.font = `bold ${Math.floor(drawH * 0.025)}px SuperFuntime, Arial`;
+  ctx.font = `bold ${Math.floor(drawH * 0.025)}px Matemasie, Arial`;
   ctx.textAlign = 'center';
   ctx.fillText(currentVolume + '%', vx + vw + 40, vy + vh/2);
 
@@ -199,7 +198,7 @@ function drawSettings(){
   ctx.lineWidth = 3;
   ctx.strokeRect(sx, sy, sw, sh);
   ctx.fillStyle = '#fff';
-  ctx.font = `bold ${Math.floor(drawH * 0.035)}px SuperFuntime, Arial`;
+  ctx.font = `bold ${Math.floor(drawH * 0.035)}px Matemasie, Arial`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('Save Settings', sx + sw/2, sy + sh/2);
@@ -355,22 +354,9 @@ document.fonts.ready.then(() => {
   }
 });
 
-// Preload font before any canvas drawing
-const fontFace = new FontFace('SuperFuntime', 'url(Font/SuperFuntime.ttf)');
-fontFace.load().then(font => {
-  document.fonts.add(font);
-  isFontLoaded = true;
-  console.log('SuperFuntime font loaded successfully');
-
-  // Redraw everything after font loads
-  if (isImageLoaded) {
-    if (currentPage === 'menu') drawMenu();
-    else if (currentPage === 'settings') drawSettings();
-  }
-}).catch(err => {
-  console.error('Font loading failed:', err);
-  isFontLoaded = true; // Allow fallback to Arial
-});
+// Google Fonts loads automatically, set as loaded
+isFontLoaded = true;
+console.log('Using Google Fonts Matemasie - automatically loaded');
 
 </script>
 
