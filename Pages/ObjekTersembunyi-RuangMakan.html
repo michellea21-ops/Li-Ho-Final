@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Objek Tersembunyi | Ruang Makan</title>
+  <style>
+    :root {
+  --highlight-border: 5px;
+  --highlight-color: lime;
+  --check-size: 3em;
+}
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: Arial, sans-serif;
+  background: black;
+  overflow: hidden;
+}
+#gameContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: url('Images/House-9/Background.svg') no-repeat center/contain;
+}
+.next-button {
+  position: absolute;
+  top: 2vh;
+  left: 5vw;
+  z-index: 20;
+  background: rgba(0, 150, 255, 0.9);
+  color: white;
+  border: 2px solid #333;
+  border-radius: 1em;
+  padding: 0.8em 1.5em;
+  cursor: pointer;
+  font-size: clamp(12px, 2vw, 18px);
+  font-weight: bold;
+  transition: all 0.3s ease;
+  display: none;
+}
+.next-button:hover {
+  background: rgba(0, 150, 255, 1);
+  transform: scale(1.05);
+}
+.score-display {
+  position: absolute;
+  top: 2vh;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  background: rgba(0, 150, 0, 0.8);
+  color: white;
+  border-radius: 1em;
+  padding: 0.8em 1.5em;
+  font-size: clamp(12px, 2vw, 18px);
+  font-weight: bold;
+}
+#exitButton {
+  position: absolute;
+  top: 2vh;
+  right: 2vw;
+  z-index: 50;
+  font-size: clamp(20px, 3vw, 30px);
+  color: white;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 30%;
+  width: 2.5em;
+  height: 2.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+#exitButton:hover {
+  background: rgb(79, 76, 76);
+  transform: scale(1.1);
+}
+.button-container {
+  position: absolute;
+  bottom: 2vh;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2vw;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 90vw;
+  z-index: 50;
+}
+.action-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  position: relative;
+}
+.action-button:hover {
+  transform: scale(1.05);
+}
+.action-button img {
+  width: clamp(200px, 15vw, 300px);
+  height: auto;
+}
+.checkmark-svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(24px, 5vw, 48px);
+  color: lime;
+  pointer-events: none;
+  display: none;
+  z-index: 100;
+}
+.object-svg {
+  position: absolute;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  z-index: 30;
+}
+.highlight {
+  position: absolute;
+  border: var(--highlight-border) solid var(--highlight-color);
+  box-sizing: border-box;
+  pointer-events: none;
+  z-index: 45;
+}
+</style>
+</head>
+<body>
+<div id="gameContainer">
+  <div id="exitButton" onclick="exitToMainMenu()">✖</div>
+  <div class="next-button" id="nextButton" onclick="goToNextLevel()">Ruangan Berikutnya →</div>
+  <div class="score-display" id="score">Poin: 0/3</div>
+  <div class="button-container" id="buttonContainer"></div>
+</div>
+
+<script>
+const gameContainer = document.getElementById('gameContainer');
+let score = 0;
+const targetScore = 3;
+let correctObjects = new Set();
+let selectedWords = [];
+
+const objectsData = {
+      "chair":   { 
+        x: 0.11, y: 0.343,  width: 0.63, height: 0.55, 
+        name: "椅子 (í-á)", 
+        svg:"Images/House-9/Chair.svg",
+        highlightWidth: 0.56,
+        highlightHeight: 0.57,
+        highlightX: 0.035,
+        highlightY: 0
+       },
+      "dining table":    { 
+        x: 0.25, y: 0.5, width: 0.36, height: 0.4, 
+        name: "食桌 (chia̍h-toh)", 
+        svg:"Images/House-9/Dining-Table.svg"
+       },
+      "bowl":  { 
+        x: 0.47, y: 0.47, width: 0.06, height: 0.07, 
+        name: "碗 (oáⁿ)", 
+        svg:"Images/House-9/Bowl.svg"
+       },
+      "candle": { 
+        x: 0.78, y: 0.08, width: 0.02, height: 0.12, 
+        name: "蠟燭 (la̍h-chek)", 
+        svg:"Images/House-9/Candle.svg"
+       },
+      "chopstick":   { 
+        x: 0.5, y: 0.56,  width: 0.07, height: 0.02, 
+        name: "筷子 (kha tī)", 
+        svg:"Images/House-9/Chopstick.svg"
+       },
+      "cup":    { 
+        x: 0.34, y: 0.45, width: 0.02, height: 0.07,  
+        name: "杯子 (au-á)", 
+        svg:"Images/House-9/Cup.svg"
+       },
+      "flower":  { 
+        x: 0.408, y: 0.39, width: 0.05, height: 0.1, 
+        name: "花 (hoe)", 
+        svg:"Images/House-9/Flower.svg"
+      },
+      "fork":    { 
+        x: 0.38, y: 0.52, width: 0.03, height: 0.09, 
+        name: "叉 (chha)", 
+        svg:"Images/House-9/Fork.svg"
+       },
+       "grandmother": { 
+        x: 0.71, y: 0.3, width: 0.2, height: 0.65, 
+        name: "奶奶 (a-má)", 
+        svg:"Images/House-9/Grandmother.svg",
+        highlightWidth: 0.121,
+        highlightHeight: 0.65,
+        highlightX: 0,
+        highlightY: 0
+       },
+      "grandfather":    { 
+        x: 0.82, y: 0.3, width: 0.2, height: 0.65, 
+        name: "爺爺 (an-kong)", 
+        svg:"Images/House-9/Grandfather.svg",
+        highlightWidth: 0.13,
+        highlightHeight: 0.65,
+        highlightX: 0.03,
+        highlightY: 0
+       },
+      "plate":   { 
+        x: 0.3, y: 0.53, width: 0.05, height: 0.05, 
+        name: "盘 (pôaⁿ)",
+        svg:"Images/House-9/Plate.svg"
+       },
+      "spoon":    { 
+        x: 0.35, y: 0.52, width: 0.03, height: 0.09, 
+        name: "湯匙 (thng-sî)", 
+        svg:"Images/House-9/Spoon.svg"
+       },
+      "tablecloth":    { 
+        x: 0.25, y: 0.606, width: 0.36, height: 0.21, 
+        name: "桌布 (toh-pò͘)", 
+        svg:"Images/House-9/Tablecloth.svg"
+       },
+      "incense":    { 
+        x: 0.82, y: 0.05, width: 0.05, height: 0.15, 
+        name: "香 (hiuⁿ)", 
+        svg:"Images/House-9/Incense.svg"
+       },
+      "vase":    { 
+        x: 0.415, y: 0.47, width: 0.04, height: 0.12, 
+        name: "花瓶 (hoe-kan)", 
+        svg:"Images/House-9/Vase.svg"
+       }
+    };
+
+    // Hokkien words tetap lengkap
+    const hokkienWords = [
+      { hokkien: "碗 (oáⁿ)", audio: "Audio/House-9/碗 (oáⁿ).mp3", svg: "Images/House-9/碗 (oáⁿ).svg" },
+      { hokkien: "蠟燭 (la̍h-chek)", audio: "Audio/House-9/蠟燭 (la̍h-chek).mp3", svg: "Images/House-9/蠟燭 (la̍h-chek).svg" },
+      { hokkien: "椅子 (í-á)", audio: "Audio/House-9/椅子 (í-á).mp3", svg: "Images/House-9/椅子 (í-á).svg" },
+      { hokkien: "筷子 (kha tī)", audio: "Audio/House-9/筷子 (kha tī).mp3", svg: "Images/House-9/筷子 (kha tī).svg" },
+      { hokkien: "杯子 (au-á)", audio: "Audio/House-9/杯子 (au-á).mp3", svg: "Images/House-9/杯子 (au-á).svg" },
+      { hokkien: "花 (hoe)", audio: "Audio/House-9/花 (hoe).mp3", svg: "Images/House-9/花 (hoe).svg" },
+      { hokkien: "叉 (chha)", audio: "Audio/House-9/叉 (chha).mp3", svg: "Images/House-9/叉 (chha).svg" },
+      { hokkien: "爺爺 (an-kong)", audio: "Audio/House-9/爺爺 (an-kong).mp3", svg: "Images/House-9/爺爺 (an-kong).svg" },
+      { hokkien: "奶奶 (a-má)", audio: "Audio/House-9/奶奶 (a-má).mp3", svg: "Images/House-9/奶奶 (a-má).svg" },
+      { hokkien: "盘 (pôaⁿ)", audio: "Audio/House-9/盘 (pôaⁿ).mp3", svg: "Images/House-9/盘 (pôaⁿ).svg" },
+      { hokkien: "湯匙 (thng-sî)", audio: "Audio/House-9/湯匙 (thng-sî).mp3", svg: "Images/House-9/湯匙 (thng-sî).svg" },
+      { hokkien: "食桌 (chia̍h-toh)", audio: "Audio/House-9/食桌 (chia̍h-toh).mp3", svg: "Images/House-9/食桌 (chia̍h-toh).svg" },
+      { hokkien: "桌布 (toh-pò͘)", audio: "Audio/House-9/桌布 (toh-pò͘).mp3", svg: "Images/House-9/桌布 (toh-pò͘).svg" },
+      { hokkien: "香 (hiuⁿ)", audio: "Audio/House-9/香 (hiuⁿ).mp3", svg: "Images/House-9/香 (hiuⁿ).svg" },
+      { hokkien: "花瓶 (hoe-kan)", audio: "Audio/House-9/花瓶 (hoe-kan).mp3", svg: "Images/House-9/花瓶 (hoe-kan).svg" }
+    ];
+
+function positionObject(obj) {
+  const W = gameContainer.clientWidth;
+  const H = gameContainer.clientHeight;
+  obj.element.style.left = (obj.x * W) + "px";
+  obj.element.style.top = (obj.y * H) + "px";
+  obj.element.style.width = (obj.width * W) + "px";
+  obj.element.style.height = (obj.height * H) + "px";
+}
+
+function createHighlight(obj) {
+  const div = document.createElement("div");
+  div.className = "highlight";
+
+  const width = (typeof obj.highlightWidth === 'number')
+    ? obj.highlightWidth * gameContainer.clientWidth
+    : obj.width * gameContainer.clientWidth;
+
+  const height = (typeof obj.highlightHeight === 'number')
+    ? obj.highlightHeight * gameContainer.clientHeight
+    : obj.height * gameContainer.clientHeight;
+
+  let left = obj.x * gameContainer.clientWidth;
+  let top = obj.y * gameContainer.clientHeight;
+
+  if (typeof obj.highlightX === 'number') left += obj.highlightX * gameContainer.clientWidth;
+  if (typeof obj.highlightY === 'number') top += obj.highlightY * gameContainer.clientHeight;
+
+  div.style.left = left + "px";
+  div.style.top = top + "px";
+  div.style.width = width + "px";
+  div.style.height = height + "px";
+
+  gameContainer.appendChild(div);
+}
+
+function updateScore() {
+  document.getElementById('score').innerText = `Score: ${score}/${targetScore}`;
+}
+
+function goToNextLevel() {
+  if(score >= targetScore) window.location.href = 'ObjekTersembunyi-RuangBermain.html';
+}
+
+function exitToMainMenu() {
+  window.location.href = 'Li-Ho-ID.html';
+}
+
+// tombol suara pake <img> biar audio selalu jalan
+function createActionButtons() {
+  const container = document.getElementById('buttonContainer');
+  container.innerHTML = '';
+  selectedWords = [];
+
+  while(selectedWords.length < 3){
+    const rand = hokkienWords[Math.floor(Math.random()*hokkienWords.length)];
+    if(!selectedWords.includes(rand)) selectedWords.push(rand);
+  }
+
+  selectedWords.forEach(word=>{
+    const btnDiv = document.createElement('div');
+    btnDiv.className = 'action-button';
+    btnDiv.dataset.word = word.hokkien;
+
+    const img = document.createElement('img');
+    img.src = word.svg;
+    btnDiv.appendChild(img);
+
+    const check = document.createElement('div');
+    check.className = 'checkmark-svg';
+    check.innerText = '✔';
+    btnDiv.appendChild(check);
+
+    word._checkElement = check;
+
+    btnDiv.addEventListener('click', ()=>{
+      new Audio(word.audio).play();
+    });
+
+    container.appendChild(btnDiv);
+  });
+}
+
+function createObjects() {
+  Object.values(objectsData).forEach(obj=>{
+    const img = document.createElement('img');
+    img.src = obj.svg;
+    img.className = "object-svg";
+    gameContainer.appendChild(img);
+    obj.element = img;
+    positionObject(obj);
+
+    img.addEventListener('click', ()=>{
+      if(
+        selectedWords.some(word=>word.hokkien===obj.name)&&
+        !correctObjects.has(obj.name)&&
+        score<targetScore
+      ){
+        correctObjects.add(obj.name);
+        score = Math.min(score+1,targetScore);
+        updateScore();
+        createHighlight(obj);
+        new Audio("Audio/correct.mp3").play();
+
+        // centang tombol yg sesuai
+        const wordBtn = selectedWords.find(word=>word.hokkien===obj.name);
+        if(wordBtn && wordBtn._checkElement) wordBtn._checkElement.style.display='block';
+
+        if(score>=targetScore){
+          document.getElementById('nextButton').style.display='block';
+          new Audio("Audio/score.mp3").play();
+        }
+      } else {
+        new Audio("Audio/wrong.mp3").play();
+      }
+    });
+  });
+}
+
+window.addEventListener('resize', ()=>{Object.values(objectsData).forEach(positionObject);});
+createObjects();
+createActionButtons();
+updateScore();
+</script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LiHo - Kategori Permainan</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      overflow: hidden;
+    }
+    #gameContainer {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: url('Kategori.svg') no-repeat center/contain;
+    }
+
+    /* Clickable button zones */
+    .click-zone {
+      position: absolute;
+      cursor: pointer;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <div id="gameContainer">
+    <!-- Guess What Button Area -->
+    <div class="click-zone" id="tebakApaBtn"></div>
+
+    <!-- Hidden Object Button Area -->
+    <div class="click-zone" id="objekTersembunyiBtn"></div>
+  </div>
+
+  <script>
+    function resizeZones() {
+      const container = document.getElementById('gameContainer');
+      const W = container.clientWidth;
+      const H = container.clientHeight;
+
+      // ukuran asli Categories.svg
+      const imgW = 1364.71;
+      const imgH = 768.67;
+
+      // scale contain
+      let scale = Math.min(W / imgW, H / imgH);
+      let drawWidth = imgW * scale;
+      let drawHeight = imgH * scale;
+      let drawX = (W - drawWidth) / 2;
+      let drawY = (H - drawHeight) / 2;
+
+      // posisi relatif tombol di svg
+      const buttons = {
+        tebakApa: { x: 0.33, y: 0.35, width: 0.35, height: 0.18 },
+        objekTersembunyi: { x: 0.30, y: 0.57, width: 0.38, height: 0.18 }
+      };
+
+      const tebakApa = document.getElementById("tebakApaBtn");
+      tebakApa.style.left = (drawX + buttons.tebakApa.x * drawWidth) + "px";
+      tebakApa.style.top = (drawY + buttons.tebakApa.y * drawHeight) + "px";
+      tebakApa.style.width = (buttons.tebakApa.width * drawWidth) + "px";
+      tebakApa.style.height = (buttons.tebakApa.height * drawHeight) + "px";
+
+      const objekTersembunyi = document.getElementById("objekTersembunyiBtn");
+      objekTersembunyi.style.left = (drawX + buttons.objekTersembunyi.x * drawWidth) + "px";
+      objekTersembunyi.style.top = (drawY + buttons.objekTersembunyi.y * drawHeight) + "px";
+      objekTersembunyi.style.width = (buttons.objekTersembunyi.width * drawWidth) + "px";
+      objekTersembunyi.style.height = (buttons.objekTersembunyi.height * drawHeight) + "px";
+    }
+
+    // Event click
+    document.getElementById("tebakApaBtn").addEventListener("click", () => {
+      window.location.href = "TebakApa-Taman.html";
+    });
+    document.getElementById("objekTersembunyiBtn").addEventListener("click", () => {
+      window.location.href = "ObjekTersembunyi-RuangKeluarga.html";
+    });
+
+    window.addEventListener("resize", resizeZones);
+    document.addEventListener("DOMContentLoaded", resizeZones);
+  </script>
+</body>
+</html>

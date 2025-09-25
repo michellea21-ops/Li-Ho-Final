@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>LiHo! | Belajar Hokkien</title>
+<style>
+  body, html {
+    margin:0; padding:0; height:100%; overflow:hidden; background:#ffffff; font-family:Arial, sans-serif;
+  }
+  #whiteScreen { position:fixed; inset:0; background:#ffffff; z-index:30; }
+  #cover { position:fixed; inset:0; display:flex; justify-content:center; align-items:center; opacity:0; z-index:20; background:#ffffff; }
+  #cover img { max-width:100%; max-height:100%; animation: scaleUp 2s forwards; }
+  @keyframes scaleUp { 0%{transform:scale(0);} 100%{transform:scale(1);} }
+
+  #gameCanvas { display:block; width:100%; height:100%; background:#000; cursor:pointer; }
+
+  .back-button {
+    position:absolute; top:20px; left:20px; z-index:40; background:rgba(255,255,255,0.9);
+    border:2px solid #333; border-radius:15px; padding:10px 20px; cursor:pointer; font-size:16px; font-weight:bold;
+    transition:all .2s ease; display:none;
+  }
+  .back-button:hover { background:#fff; transform:scale(1.03); }
+</style>
+</head>
+<body>
+
+<div id="whiteScreen"></div>
+<div id="cover"><img src="Images/Logo.svg" alt="Logo" /></div>
+
+<div class="back-button" onclick="goBack()">← Kembali ke Menu</div>
+
+<audio id="bgm" src="Audio/Liho.mp3" loop></audio>
+
+<canvas id="gameCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const whiteScreen = document.getElementById('whiteScreen');
+const cover = document.getElementById('cover');
+const bgm = document.getElementById('bgm');
+const backBtn = document.querySelector('.back-button');
+
+let currentPage = 'menu';
+let backgroundImage = new Image();
+let isImageLoaded = false;
+
+const menuButtons = {
+  play: { x:0.409, y:0.486, width:0.195, height:0.148 },
+  pengaturan: { x:0.436, y:0.666, width:0.144, height:0.109 },
+  exit: { x:0.435, y:0.806, width:0.144, height:0.109 }
+};
+
+const pengaturanAreas = {
+  languageDropdown: { x:0.5, y:0.367, width:0.12, height:0.065 },
+  volumeSlider:     { x:0.41, y:0.62,  width:0.15, height:0.04  },
+  saveButton:       { x:0.4, y:0.72,  width:0.2,  height:0.08  }
+};
+
+let currentLanguage = localStorage.getItem('hokkienGameLanguage') || 'en';
+let currentVolume = parseInt(localStorage.getItem('hokkienGameVolume')) || 75;
+
+/* intro */
+whiteScreen.addEventListener('click', () => {
+  whiteScreen.style.display = 'none';
+  cover.style.opacity = '1';
+  bgm.volume = currentVolume/100;
+  bgm.play().catch(()=>{});
+
+  const scaleDuration = 2000;
+  const stayDuration = 1200;
+  const fadeDuration = 600;
+
+  setTimeout(() => {
+    cover.style.transition = `opacity ${fadeDuration}ms ease`;
+    cover.style.opacity = '0';
+    setTimeout(() => {
+      cover.style.display = 'none';
+      loadMenu();
+    }, fadeDuration);
+  }, scaleDuration + stayDuration);
+});
+
+/* menu */
+function loadMenu(){
+  currentPage = 'menu';
+  backBtn.style.display = 'none';
+  backgroundImage.src = 'Images/Menu.svg';
+}
+function drawMenu(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+}
+
+/* pengaturan */
+function loadPengaturan(){
+  currentPage = 'pengaturan';
+  backBtn.style.display = 'block';
+  backgroundImage.src = 'Images/Pengaturan.svg';
+}
+function drawPengaturan(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const aspect = backgroundImage.width / backgroundImage.height;
+  let drawW, drawH, drawX, drawY;
+  if (canvas.width / canvas.height > aspect) {
+    drawH = canvas.height; drawW = drawH * aspect; drawX = (canvas.width - drawW)/2; drawY = 0;
+  } else {
+    drawW = canvas.width; drawH = drawW / aspect; drawX = 0; drawY = (canvas.height - drawH)/2;
+  }
+  ctx.drawImage(backgroundImage, drawX, drawY, drawW, drawH);
+
+  const lang = pengaturanAreas.languageDropdown;
+  const lx = drawX + drawW*lang.x, ly = drawY + drawH*lang.y, lw = drawW*lang.width, lh = drawH*lang.height;
+  ctx.fillStyle = '#6c2d00'; ctx.fillRect(lx, ly, lw, lh);
+  ctx.fillStyle = '#fff'; ctx.font = `bold ${Math.floor(drawH*0.035)}px Arial`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(currentLanguage === 'id' ? 'Indonesian' : 'English', lx+lw/2, ly+lh/2);
+
+  const vol = pengaturanAreas.volumeSlider;
+  const vx = drawX+drawW*vol.x, vy=drawY+drawH*vol.y, vw=drawW*vol.width, vh=drawH*vol.height;
+  ctx.fillStyle='#ddd'; ctx.fillRect(vx, vy+vh*0.4, vw, vh*0.2);
+  const fillW = (vw*currentVolume)/100;
+  ctx.fillStyle='#42c148'; ctx.fillRect(vx, vy+vh*0.4, fillW, vh*0.2);
+  const thumbX = vx+fillW-8, thumbY=vy+vh*0.2, thumbSize=vh*0.6;
+  ctx.fillStyle='#fff'; ctx.strokeStyle='#42c148'; ctx.lineWidth=2;
+  ctx.fillRect(thumbX, thumbY, 16, thumbSize); ctx.strokeRect(thumbX, thumbY, 16, thumbSize);
+  ctx.fillStyle='#333'; ctx.font=`bold ${Math.floor(drawH*0.025)}px Arial`; ctx.textAlign='center';
+  ctx.fillText(currentVolume+'%', vx+vw+40, vy+vh/2);
+
+  const save = pengaturanAreas.saveButton;
+  const sx = drawX+drawW*save.x, sy=drawY+drawH*save.y, sw=drawW*save.width, sh=drawH*save.height;
+  ctx.fillStyle='#8B5E3C'; ctx.fillRect(sx, sy, sw, sh);
+  ctx.strokeStyle='#5C4033'; ctx.lineWidth=3; ctx.strokeRect(sx, sy, sw, sh);
+  ctx.fillStyle='#fff'; ctx.font=`bold ${Math.floor(drawH*0.035)}px Arial`; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('Simpan Pengaturan', sx+sw/2, sy+sh/2);
+}
+
+/* clicks */
+canvas.addEventListener('click',(e)=>{
+  if(!isImageLoaded)return;
+  const rect=canvas.getBoundingClientRect();
+  const scaleX=canvas.width/rect.width, scaleY=canvas.height/rect.height;
+  const cx=(e.clientX-rect.left)*scaleX, cy=(e.clientY-rect.top)*scaleY;
+  const relX=cx/canvas.width, relY=cy/canvas.height;
+
+  if(currentPage==='menu'){
+    for(const [name,btn] of Object.entries(menuButtons)){
+      if(relX>=btn.x&&relX<=btn.x+btn.width&&relY>=btn.y&&relY<=btn.y+btn.height){
+        if(name==='main'){window.location.href='Pages/Kategori.html';}
+        else if(name==='pengaturan'){loadPengaturan();}
+        else if(name==='keluar'){if(confirm('Yakin keluar?'))alert('Terima kasih sudah bermain! 再見 (Zài jiàn)!');}
+      }
+    }
+  }else if(currentPage==='pengaturan'){
+    const aspect=backgroundImage.width/backgroundImage.height;
+    let drawW,drawH,drawX,drawY;
+    if(canvas.width/canvas.height>aspect){drawH=canvas.height;drawW=drawH*aspect;drawX=(canvas.width-drawW)/2;drawY=0;}
+    else{drawW=canvas.width;drawH=drawW/aspect;drawX=0;drawY=(canvas.height-drawH)/2;}
+    const relCX=(cx-drawX)/drawW, relCY=(cy-drawY)/drawH;
+
+    const lang=pengaturanAreas.languageDropdown;
+    if(relCX>=lang.x&&relCX<=lang.x+lang.width&&relCY>=lang.y&&relCY<=lang.y+lang.height){
+      currentLanguage=(currentLanguage==='id')?'en':'id';
+      localStorage.setItem('hokkienGameLanguage',currentLanguage);
+      drawPengaturan();return;
+    }
+    const vol=pengaturanAreas.volumeSlider;
+    if(relCX>=vol.x&&relCX<=vol.x+vol.width&&relCY>=vol.y&&relCY<=vol.y+vol.height){
+      const pos=(relCX-vol.x)/vol.width;
+      currentVolume=Math.max(0,Math.min(100,Math.round(pos*100)));
+      bgm.volume=currentVolume/100;
+      localStorage.setItem('hokkienGameVolume',currentVolume);
+      drawPengaturan();return;
+    }
+    const save=pengaturanAreas.saveButton;
+    if(relCX>=save.x&&relCX<=save.x+save.width&&relCY>=save.y&&relCY<=save.y+save.height){
+      localStorage.setItem('hokkienGameLanguage',currentLanguage);
+      localStorage.setItem('hokkienGameVolume',currentVolume);
+      if(currentLanguage==='en'){window.location.href='Li-Ho-EN.html';}
+      else{alert('Pengaturan disimpan!');}
+    }
+  }
+});
+
+/* resize & draw */
+function resizeAll(){
+  canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;
+  if(isImageLoaded){
+    if(currentPage==='menu')drawMenu();
+    else if(currentPage==='pengaturan')drawPengaturan();
+  }
+}
+backgroundImage.onload=()=>{isImageLoaded=true;resizeAll();};
+window.addEventListener('resize',resizeAll);
+
+/* preload */
+(new Image()).src='Images/Menu.svg';
+(new Image()).src='Images/Pengaturan.svg';
+
+/* apply saved */
+(function(){
+  const savedLang=localStorage.getItem('hokkienGameLanguage');
+  if(savedLang)currentLanguage=savedLang;
+  const savedVol=localStorage.getItem('hokkienGameVolume');
+  if(savedVol)currentVolume=parseInt(savedVol,10);
+  bgm.volume=(currentVolume||75)/100;
+})();
+
+(function loop(){resizeAll();requestAnimationFrame(loop);})();
+</script>
+</body>
+</html>

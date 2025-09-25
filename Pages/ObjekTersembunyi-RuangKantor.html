@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Objek Tersembunyi | Ruang Kantor</title>
+  <style>
+    :root {
+  --highlight-border: 5px;
+  --highlight-color: lime;
+  --check-size: 3em;
+}
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: Arial, sans-serif;
+  background: black;
+  overflow: hidden;
+}
+#gameContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: url('Images/House-4/Background.svg') no-repeat center/contain;
+}
+.next-button {
+  position: absolute;
+  top: 2vh;
+  left: 5vw;
+  z-index: 20;
+  background: rgba(0, 150, 255, 0.9);
+  color: white;
+  border: 2px solid #333;
+  border-radius: 1em;
+  padding: 0.8em 1.5em;
+  cursor: pointer;
+  font-size: clamp(12px, 2vw, 18px);
+  font-weight: bold;
+  transition: all 0.3s ease;
+  display: none;
+}
+.next-button:hover {
+  background: rgba(0, 150, 255, 1);
+  transform: scale(1.05);
+}
+.score-display {
+  position: absolute;
+  top: 2vh;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  background: rgba(0, 150, 0, 0.8);
+  color: white;
+  border-radius: 1em;
+  padding: 0.8em 1.5em;
+  font-size: clamp(12px, 2vw, 18px);
+  font-weight: bold;
+}
+#exitButton {
+  position: absolute;
+  top: 2vh;
+  right: 2vw;
+  z-index: 50;
+  font-size: clamp(20px, 3vw, 30px);
+  color: white;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 30%;
+  width: 2.5em;
+  height: 2.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+#exitButton:hover {
+  background: rgb(79, 76, 76);
+  transform: scale(1.1);
+}
+.button-container {
+  position: absolute;
+  bottom: 2vh;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2vw;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 90vw;
+  z-index: 50;
+}
+.action-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  position: relative;
+}
+.action-button:hover {
+  transform: scale(1.05);
+}
+.action-button img {
+  width: clamp(200px, 15vw, 300px);
+  height: auto;
+}
+.checkmark-svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(24px, 5vw, 48px);
+  color: lime;
+  pointer-events: none;
+  display: none;
+  z-index: 100;
+}
+.object-svg {
+  position: absolute;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  z-index: 30;
+}
+.highlight {
+  position: absolute;
+  border: var(--highlight-border) solid var(--highlight-color);
+  box-sizing: border-box;
+  pointer-events: none;
+  z-index: 45;
+}
+</style>
+</head>
+<body>
+<div id="gameContainer">
+  <div id="exitButton" onclick="exitToMainMenu()">✖</div>
+  <div class="next-button" id="nextButton" onclick="goToNextLevel()">Ruangan Berikutnya →</div>
+  <div class="score-display" id="score">Poin: 0/3</div>
+  <div class="button-container" id="buttonContainer"></div>
+</div>
+
+<script>
+const gameContainer = document.getElementById('gameContainer');
+let score = 0;
+const targetScore = 3;
+let correctObjects = new Set();
+let selectedWords = [];
+
+const objectsData = {
+  "glasses":  { x:0.31,y:0.55,width:0.06,height:0.07,name:"眼鏡 (ba̍k-kìaⁿ)",svg:"Images/House-4/Glasses.svg"},
+  "eraser": { x:0.3,y:0.7,width:0.05,height:0.07,name:"擦仔 (chhat-á)",svg:"Images/House-4/Eraser.svg",highlightWidth: 0.027, highlightHeight: 0.07, highlightX: 0.025, highlightY: 0},
+  "father": { x:0.4,y:0.1,width:0.1,height:0.5,name:"父親 (hū-chhin)",svg:"Images/House-4/Father.svg",highlightWidth: 0.1, highlightHeight: 0.36, highlightX: 0, highlightY: 0},
+  "newspaper": { x:0.23,y:0.302,width:0.09,height:0.16,name:"新聞 (sin-bûn)",svg:"Images/House-4/Newspaper.svg"},
+  "notes": { x:0.63,y:0.55,width:0.1,height:0.27,name:"筆記簿 (pit-kì-phō·)",svg:"Images/House-4/Notes.svg"},
+  "paper": { x:0.38,y:0.44,width:0.16,height:0.37,name:"紙 (chóa)",svg:"Images/House-4/Paper.svg"},
+  "pen": { x:0.59,y:0.6,width:0.03,height:0.2,name:"原子筆 (goân-chú-pit)",svg:"Images/House-4/Pen.svg"},
+  "pencil": { x:0.55,y:0.5,width:0.025,height:0.2,name:"筆 (pit)",svg:"Images/House-4/Pencil.svg"},
+  "phone": { x:0.23,y:0.48,width:0.06,height:0.2,name:"電話 (tiān-ōe)",svg:"Images/House-4/Phone.svg"},
+  "tv": { x:0.856,y:0.1,width:0.13,height:0.55,name:"電視 (tiān-sī)",svg:"Images/House-4/TV.svg"}
+};
+
+const hokkienWords = [
+  { hokkien:"眼鏡 (ba̍k-kìaⁿ)",audio:"Audio/House-4/眼鏡 (ba̍k-kìaⁿ).mp3",svg:"Images/House-4/眼鏡 (ba̍k-kìaⁿ).svg"},
+  { hokkien:"擦仔 (chhat-á)",audio:"Audio/House-4/擦仔 (chhat-á).mp3",svg:"Images/House-4/擦仔 (chhat-á).svg"},
+  { hokkien:"父親 (hū-chhin)",audio:"Audio/House-4/父親 (hū-chhin).mp3",svg:"Images/House-4/父親 (hū-chhin).svg"},
+  { hokkien:"新聞 (sin-bûn)",audio:"Audio/House-4/新聞 (sin-bûn).mp3",svg:"Images/House-4/新聞 (sin-bûn).svg"},
+  { hokkien:"筆記簿 (pit-kì-phō·)",audio:"Audio/House-4/筆記簿 (pit-kì-phō·).mp3",svg:"Images/House-4/筆記簿 (pit-kì-phō·).svg"},
+  { hokkien:"紙 (chóa)",audio:"Audio/House-4/紙 (chóa).mp3",svg:"Images/House-4/紙 (chóa).svg"},
+  { hokkien:"原子筆 (goân-chú-pit)",audio:"Audio/House-4/原子筆 (goân-chú-pit).mp3",svg:"Images/House-4/原子筆 (goân-chú-pit).svg"},
+  { hokkien:"筆 (pit)",audio:"Audio/House-4/筆 (pit).mp3",svg:"Images/House-4/筆 (pit).svg"},
+  { hokkien:"電話 (tiān-ōe)",audio:"Audio/House-4/電話 (tiān-ōe).mp3",svg:"Images/House-4/電話 (tiān-ōe).svg"},
+  { hokkien:"電視 (tiān-sī)",audio:"Audio/House-4/電視 (tiān-sī).mp3",svg:"Images/House-4/電視 (tiān-sī).svg"}
+];
+
+function positionObject(obj) {
+  const W = gameContainer.clientWidth;
+  const H = gameContainer.clientHeight;
+  obj.element.style.left = (obj.x * W) + "px";
+  obj.element.style.top = (obj.y * H) + "px";
+  obj.element.style.width = (obj.width * W) + "px";
+  obj.element.style.height = (obj.height * H) + "px";
+}
+
+function createHighlight(obj) {
+  const div = document.createElement("div");
+  div.className = "highlight";
+
+  const width = (typeof obj.highlightWidth === 'number')
+    ? obj.highlightWidth * gameContainer.clientWidth
+    : obj.width * gameContainer.clientWidth;
+
+  const height = (typeof obj.highlightHeight === 'number')
+    ? obj.highlightHeight * gameContainer.clientHeight
+    : obj.height * gameContainer.clientHeight;
+
+  let left = obj.x * gameContainer.clientWidth;
+  let top = obj.y * gameContainer.clientHeight;
+
+  if (typeof obj.highlightX === 'number') left += obj.highlightX * gameContainer.clientWidth;
+  if (typeof obj.highlightY === 'number') top += obj.highlightY * gameContainer.clientHeight;
+
+  div.style.left = left + "px";
+  div.style.top = top + "px";
+  div.style.width = width + "px";
+  div.style.height = height + "px";
+
+  gameContainer.appendChild(div);
+}
+
+function updateScore() {
+  document.getElementById('score').innerText = `Score: ${score}/${targetScore}`;
+}
+
+function goToNextLevel() {
+  if(score >= targetScore) window.location.href = 'ObjekTersembunyi-RuangCuci.html';
+}
+
+function exitToMainMenu() {
+  window.location.href = 'Li-Ho-ID.html';
+}
+
+// tombol suara pake <img> biar audio selalu jalan
+function createActionButtons() {
+  const container = document.getElementById('buttonContainer');
+  container.innerHTML = '';
+  selectedWords = [];
+
+  while(selectedWords.length < 3){
+    const rand = hokkienWords[Math.floor(Math.random()*hokkienWords.length)];
+    if(!selectedWords.includes(rand)) selectedWords.push(rand);
+  }
+
+  selectedWords.forEach(word=>{
+    const btnDiv = document.createElement('div');
+    btnDiv.className = 'action-button';
+    btnDiv.dataset.word = word.hokkien;
+
+    const img = document.createElement('img');
+    img.src = word.svg;
+    btnDiv.appendChild(img);
+
+    const check = document.createElement('div');
+    check.className = 'checkmark-svg';
+    check.innerText = '✔';
+    btnDiv.appendChild(check);
+
+    word._checkElement = check;
+
+    btnDiv.addEventListener('click', ()=>{
+      new Audio(word.audio).play();
+    });
+
+    container.appendChild(btnDiv);
+  });
+}
+
+function createObjects() {
+  Object.values(objectsData).forEach(obj=>{
+    const img = document.createElement('img');
+    img.src = obj.svg;
+    img.className = "object-svg";
+    gameContainer.appendChild(img);
+    obj.element = img;
+    positionObject(obj);
+
+    img.addEventListener('click', ()=>{
+      if(
+        selectedWords.some(word=>word.hokkien===obj.name)&&
+        !correctObjects.has(obj.name)&&
+        score<targetScore
+      ){
+        correctObjects.add(obj.name);
+        score = Math.min(score+1,targetScore);
+        updateScore();
+        createHighlight(obj);
+        new Audio("Audio/correct.mp3").play();
+
+        // centang tombol yg sesuai
+        const wordBtn = selectedWords.find(word=>word.hokkien===obj.name);
+        if(wordBtn && wordBtn._checkElement) wordBtn._checkElement.style.display='block';
+
+        if(score>=targetScore){
+          document.getElementById('nextButton').style.display='block';
+          new Audio("Audio/score.mp3").play();
+        }
+      } else {
+        new Audio("Audio/wrong.mp3").play();
+      }
+    });
+  });
+}
+
+window.addEventListener('resize', ()=>{Object.values(objectsData).forEach(positionObject);});
+createObjects();
+createActionButtons();
+updateScore();
+</script>
+</body>
+</html>
