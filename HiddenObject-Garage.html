@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hidden Object | Garage</title>
+<style>
+:root {
+  --highlight-border: 5px;
+  --highlight-color: lime;
+  --check-size: 3em;
+}
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: Arial, sans-serif;
+  background: black;
+  overflow: hidden;
+}
+#gameContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: url('Images/House-7/Background.svg') no-repeat center/contain;
+}
+.next-button {
+  position: absolute;
+  top: 2vh;
+  left: 5vw;
+  z-index: 20;
+  background: rgba(0, 150, 255, 0.9);
+  color: white;
+  border: 2px solid #333;
+  border-radius: 1em;
+  padding: 0.8em 1.5em;
+  cursor: pointer;
+  font-size: clamp(12px, 2vw, 18px);
+  font-weight: bold;
+  transition: all 0.3s ease;
+  display: none;
+}
+.next-button:hover {
+  background: rgba(0, 150, 255, 1);
+  transform: scale(1.05);
+}
+.score-display {
+  position: absolute;
+  top: 2vh;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  background: rgba(0, 150, 0, 0.8);
+  color: white;
+  border-radius: 1em;
+  padding: 0.8em 1.5em;
+  font-size: clamp(12px, 2vw, 18px);
+  font-weight: bold;
+}
+#exitButton {
+  position: absolute;
+  top: 2vh;
+  right: 2vw;
+  z-index: 50;
+  font-size: clamp(20px, 3vw, 30px);
+  color: white;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 30%;
+  width: 2.5em;
+  height: 2.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+#exitButton:hover {
+  background: rgb(79, 76, 76);
+  transform: scale(1.1);
+}
+.button-container {
+  position: absolute;
+  bottom: 2vh;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2vw;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 90vw;
+  z-index: 50;
+}
+.action-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  position: relative;
+}
+.action-button:hover {
+  transform: scale(1.05);
+}
+.action-button img {
+  width: clamp(200px, 15vw, 300px);
+  height: auto;
+}
+.checkmark-svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(24px, 5vw, 48px);
+  color: lime;
+  pointer-events: none;
+  display: none;
+  z-index: 100;
+}
+.object-svg {
+  position: absolute;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  z-index: 30;
+}
+.highlight {
+  position: absolute;
+  border: var(--highlight-border) solid var(--highlight-color);
+  box-sizing: border-box;
+  pointer-events: none;
+  z-index: 45;
+}
+</style>
+</head>
+<body>
+<div id="gameContainer">
+  <div id="exitButton" onclick="exitToMainMenu()">✖</div>
+  <div class="next-button" id="nextButton" onclick="goToNextLevel()">Next Room →</div>
+  <div class="score-display" id="score">Score: 0/3</div>
+  <div class="button-container" id="buttonContainer"></div>
+</div>
+
+<script>
+const gameContainer = document.getElementById('gameContainer');
+let score = 0;
+const targetScore = 3;
+let correctObjects = new Set();
+let selectedWords = [];
+
+const objectsData = {
+      "road":  { 
+        x: 0.014, y: 0.707, width: 0.973, height: 0.34, 
+        name: "路 (lō·)", 
+        svg:"Images/House-7/Road.svg"
+       },
+      "box":  { 
+        x: 0.715, y: 0.31, width: 0.12, height: 0.4, 
+        name: "紙箱 (chóa-siuⁿ-á)", 
+        svg:"Images/House-7/Box.svg"
+       },
+      "car": { 
+        x: 0.4, y: 0.363, width: 0.2, height: 0.35, 
+        name: "車 (chhia)", 
+        svg:"Images/House-7/Car.svg"
+       },
+      "wheels":   { 
+        x: 0.6, y: 0.442, width: 0.1, height: 0.27, 
+        name: "車輪 (chhia-lián)", 
+        svg:"Images/House-7/Wheels.svg"
+       },
+      "door":   { 
+        x: 0.277, y: 0.28,  width: 0.11, height: 0.4, 
+        name: "门 (mn̂g)", 
+        svg:"Images/House-7/Door.svg"
+       },
+      "gasoline":   { 
+        x: 0.65, y: 0.513,  width: 0.07, height: 0.2, 
+        name: "汽油 (khì-iû)", 
+        svg:"Images/House-7/Gasoline.svg"
+       },
+      "paint":    { 
+        x: 0.185, y: 0.453, width: 0.05, height: 0.1,  
+        name: "漆 (chhat)", 
+        svg:"Images/House-7/Paint.svg"
+       },
+      "stairs":    { 
+        x: 0.258, y: 0.67, width: 0.15, height: 0.05, 
+        name: "梯 (thui)", 
+        svg:"Images/House-7/Stairs.svg"
+       },
+      "iron box": { 
+        x: 0.177, y: 0.316, width: 0.065, height: 0.1, 
+        name: "铁盒 (thih-a̍p)", 
+        svg:"Images/House-7/Iron-Box.svg"
+       },
+      "tools":    { 
+        x: 0.63, y: 0.3, width: 0.07, height: 0.12, 
+        name: "工具 (kang-khū)", 
+        svg:"Images/House-7/Tools.svg"
+       }
+    };
+
+    // Hokkien words tetap lengkap
+    const hokkienWords = [
+      { hokkien: "紙箱 (chóa-siuⁿ-á)", audio: "Audio/House-7/紙箱 (chóa-siuⁿ-á).mp3", svg: "Images/House-7/紙箱 (chóa-siuⁿ-á).svg" },
+      { hokkien: "車 (chhia)", audio: "Audio/House-7/車 (chhia).mp3", svg: "Images/House-7/車 (chhia).svg" },
+      { hokkien: "门 (mn̂g)", audio: "Audio/House-7/门 (mn̂g).mp3", svg: "Images/House-7/门 (mn̂g).svg" },
+      { hokkien: "汽油 (khì-iû)", audio: "Audio/House-7/汽油 (khì-iû).mp3", svg: "Images/House-7/汽油 (khì-iû).svg" },
+      { hokkien: "漆 (chhat)", audio: "Audio/House-7/漆 (chhat).mp3", svg: "Images/House-7/漆 (chhat).svg" },
+      { hokkien: "路 (lō·)", audio: "Audio/House-7/路 (lō·).mp3", svg: "Images/House-7/路 (lō·).svg" },
+      { hokkien: "梯 (thui)", audio: "Audio/House-7/梯 (thui).mp3", svg: "Images/House-7/梯 (thui).svg" },
+      { hokkien: "铁盒 (thih-a̍p)", audio: "Audio/House-7/铁盒 (thih-a̍p).mp3", svg: "Images/House-7/铁盒 (thih-a̍p).svg" },
+      { hokkien: "工具 (kang-khū)", audio: "Audio/House-7/工具 (kang-khū).m4a", svg: "Images/House-7/工具 (kang-khū).svg" },
+      { hokkien: "車輪 (chhia-lián)", audio: "Audio/House-7/車輪 (chhia-lián).mp3", svg: "Images/House-7/車輪 (chhia-lián).svg" }
+    ];
+
+function positionObject(obj) {
+  const W = gameContainer.clientWidth;
+  const H = gameContainer.clientHeight;
+  obj.element.style.left = (obj.x * W) + "px";
+  obj.element.style.top = (obj.y * H) + "px";
+  obj.element.style.width = (obj.width * W) + "px";
+  obj.element.style.height = (obj.height * H) + "px";
+}
+
+function createHighlight(obj) {
+  const div = document.createElement("div");
+  div.className = "highlight";
+
+  const width = (typeof obj.highlightWidth === 'number')
+    ? obj.highlightWidth * gameContainer.clientWidth
+    : obj.width * gameContainer.clientWidth;
+
+  const height = (typeof obj.highlightHeight === 'number')
+    ? obj.highlightHeight * gameContainer.clientHeight
+    : obj.height * gameContainer.clientHeight;
+
+  let left = obj.x * gameContainer.clientWidth;
+  let top = obj.y * gameContainer.clientHeight;
+
+  if (typeof obj.highlightX === 'number') left += obj.highlightX * gameContainer.clientWidth;
+  if (typeof obj.highlightY === 'number') top += obj.highlightY * gameContainer.clientHeight;
+
+  div.style.left = left + "px";
+  div.style.top = top + "px";
+  div.style.width = width + "px";
+  div.style.height = height + "px";
+
+  gameContainer.appendChild(div);
+}
+
+function updateScore() {
+  document.getElementById('score').innerText = `Score: ${score}/${targetScore}`;
+}
+
+function goToNextLevel() {
+  if(score >= targetScore) window.location.href = 'HiddenObject-Bathroom.html';
+}
+
+function exitToMainMenu() {
+  window.location.href = 'Li-Ho-EN.html';
+}
+
+// tombol suara pake <img> biar audio selalu jalan
+function createActionButtons() {
+  const container = document.getElementById('buttonContainer');
+  container.innerHTML = '';
+  selectedWords = [];
+
+  while(selectedWords.length < 3){
+    const rand = hokkienWords[Math.floor(Math.random()*hokkienWords.length)];
+    if(!selectedWords.includes(rand)) selectedWords.push(rand);
+  }
+
+  selectedWords.forEach(word=>{
+    const btnDiv = document.createElement('div');
+    btnDiv.className = 'action-button';
+    btnDiv.dataset.word = word.hokkien;
+
+    const img = document.createElement('img');
+    img.src = word.svg;
+    btnDiv.appendChild(img);
+
+    const check = document.createElement('div');
+    check.className = 'checkmark-svg';
+    check.innerText = '✔';
+    btnDiv.appendChild(check);
+
+    word._checkElement = check;
+
+    btnDiv.addEventListener('click', ()=>{
+      new Audio(word.audio).play();
+    });
+
+    container.appendChild(btnDiv);
+  });
+}
+
+function createObjects() {
+  Object.values(objectsData).forEach(obj=>{
+    const img = document.createElement('img');
+    img.src = obj.svg;
+    img.className = "object-svg";
+    gameContainer.appendChild(img);
+    obj.element = img;
+    positionObject(obj);
+
+    img.addEventListener('click', ()=>{
+      if(
+        selectedWords.some(word=>word.hokkien===obj.name)&&
+        !correctObjects.has(obj.name)&&
+        score<targetScore
+      ){
+        correctObjects.add(obj.name);
+        score = Math.min(score+1,targetScore);
+        updateScore();
+        createHighlight(obj);
+        new Audio("Audio/correct.mp3").play();
+
+        // centang tombol yg sesuai
+        const wordBtn = selectedWords.find(word=>word.hokkien===obj.name);
+        if(wordBtn && wordBtn._checkElement) wordBtn._checkElement.style.display='block';
+
+        if(score>=targetScore){
+          document.getElementById('nextButton').style.display='block';
+          new Audio("Audio/score.mp3").play();
+        }
+      } else {
+        new Audio("Audio/wrong.mp3").play();
+      }
+    });
+  });
+}
+
+window.addEventListener('resize', ()=>{Object.values(objectsData).forEach(positionObject);});
+createObjects();
+createActionButtons();
+updateScore();
+</script>
+</body>
+</html>

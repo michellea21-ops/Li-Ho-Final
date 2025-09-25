@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hidden Object | Living Room</title>
+<style>
+:root {
+  --highlight-border: 5px;
+  --highlight-color: lime;
+  --check-size: 3em;
+}
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: Arial, sans-serif;
+  background: black;
+  overflow: hidden;
+}
+#gameContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: black;
+}
+.next-button {
+  position: absolute;
+  top: 2vh;
+  left: 5vw;
+  z-index: 60;
+  background: rgba(0, 150, 255, 0.9);
+  color: white;
+  border: 2px solid #333;
+  border-radius: 1em;
+  padding: 0.8em 1.5em;
+  cursor: pointer;
+  font-size: clamp(12px, 2vw, 18px);
+  font-weight: bold;
+  transition: all 0.3s ease;
+  display: none;
+}
+.next-button:hover {
+  background: rgba(0, 150, 255, 1);
+  transform: scale(1.05);
+}
+.score-display {
+  position: absolute;
+  top: 2vh;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  background: rgba(0, 150, 0, 0.8);
+  color: white;
+  border-radius: 1em;
+  padding: 0.8em 1.5em;
+  font-size: clamp(12px, 2vw, 18px);
+  font-weight: bold;
+}
+#exitButton {
+  position: absolute;
+  top: 2vh;
+  right: 2vw;
+  z-index: 50;
+  font-size: clamp(20px, 3vw, 30px);
+  color: white;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 30%;
+  width: 2.5em;
+  height: 2.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+#exitButton:hover {
+  background: rgb(79, 76, 76);
+  transform: scale(1.1);
+}
+.button-container {
+  position: absolute;
+  bottom: 2vh;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2vw;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 90vw;
+  z-index: 50;
+}
+.action-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  position: relative;
+}
+.action-button:hover {
+  transform: scale(1.05);
+}
+.action-button img {
+  width: clamp(200px, 15vw, 300px);
+  height: auto;
+}
+.checkmark-svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(24px, 5vw, 48px);
+  color: lime;
+  pointer-events: none;
+  display: none;
+  z-index: 9999; /* selalu di atas highlight */
+}
+.object-svg {
+  position: absolute;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  z-index: 30;
+}
+.highlight {
+  position: absolute;
+  border: var(--highlight-border) solid var(--highlight-color);
+  box-sizing: border-box;
+  pointer-events: none;
+  z-index: 45;
+}
+</style>
+</head>
+<body>
+<div id="gameContainer">
+  <div id="exitButton" onclick="exitToMainMenu()">✖</div>
+  <div class="next-button" id="nextButton" onclick="goToNextLevel()">Next Room →</div>
+  <div class="score-display" id="score">Score: 0/3</div>
+  <div class="button-container" id="buttonContainer"></div>
+</div>
+
+<script>
+const gameContainer = document.getElementById('gameContainer');
+let score = 0;
+const targetScore = 3;
+let correctObjects = new Set();
+let selectedWords = [];
+
+const objectsData={
+      "wall":    {x:0,y:0,width:1,height:0.76,name:"壁 (piahⁿ)", svg: "Images/House-1/Wall.svg"},
+      "floor":   {x:0.005,y:0.74,width:0.99,height:0.26,name:"地板 (tē-pán)", svg: "Images/House-1/Floor.svg"},
+      "window":  {x:0.05,y:0.055,width:0.18,height:0.45,name:"窗戶 (chhiⁿ-hòo)", svg: "Images/House-1/Window.svg"},
+      "picture": {x:0.3,y:0.16,width:0.15,height:0.2,name:"相片 (siòng-phìⁿ)", svg: "Images/House-1/Picture.svg"},
+      "clock":   {x:0.58,y:0.13,width:0.12,height:0.23,name:"時鐘 (sî-cheng)", svg: "Images/House-1/Clock.svg"},
+      "lamp":    {x:0.82,y:0.3,width:0.15,height:0.5,name:"燈 (teng)", svg: "Images/House-1/Lamp.svg", 
+        highlightWidth: 0.11,
+        highlightHeight: 0.5,
+        highlightX: 0,
+        highlightY: 0},
+      "drawer":  {x:0.095,y:0.55,width:0.22,height:0.25,name:"抽屜 (thiu-tî)", svg: "Images/House-1/Drawer.svg"},
+      "speaker": {x:0.69,y:0.5,width:0.1,height:0.3,name:"喇叭 (lah-pa)", svg: "Images/House-1/Speaker.svg",
+        highlightWidth: 0.085,
+        highlightHeight: 0.3,
+        highlightX: 0.005,
+        highlightY: 0
+      },
+      "rug":     {x:0.25,y:0.76,width:0.5,height:0.25,name:"毯 (thô͘-thòaⁿ)", svg: "Images/House-1/Rug.svg"},
+      "sofa":    {x:0.35,y:0.45,width:0.3,height:0.35,name:"沙發 (soa-hoat)", svg: "Images/House-1/Sofa.svg"}
+    };
+
+const hokkienWords=[
+  {hokkien:"窗戶 (chhiⁿ-hòo)",audio:"Audio/House-1/窗戶 (chhiⁿ-hòo).mp3",svg:"Images/House-1/窗戶 (chhiⁿ-hòo).svg"},
+  {hokkien:"相片 (siòng-phìⁿ)",audio:"Audio/House-1/相片 (siòng-phìⁿ).mp3",svg:"Images/House-1/相片 (siòng-phìⁿ).svg"},
+  {hokkien:"時鐘 (sî-cheng)",audio:"Audio/House-1/時鐘 (sî-cheng).mp3",svg:"Images/House-1/時鐘 (sî-cheng).svg"},
+  {hokkien:"燈 (teng)",audio:"Audio/House-1/燈 (teng).mp3",svg:"Images/House-1/燈 (teng).svg"},
+  {hokkien:"抽屜 (thiu-tî)",audio:"Audio/House-1/抽屜 (thiu-tî).mp3",svg:"Images/House-1/抽屜 (thiu-tî).svg"},
+  {hokkien:"沙發 (soa-hoat)",audio:"Audio/House-1/沙發 (soa-hoat).mp3",svg:"Images/House-1/沙發 (soa-hoat).svg"},
+  {hokkien:"喇叭 (lah-pa)",audio:"Audio/House-1/喇叭 (lah-pa).mp3",svg:"Images/House-1/喇叭 (lah-pa).svg"},
+  {hokkien:"毯 (thô͘-thòaⁿ)",audio:"Audio/House-1/毯 (thô͘-thòaⁿ).m4a",svg:"Images/House-1/毯 (thô͘-thòaⁿ).svg"},
+  {hokkien:"壁 (piahⁿ)",audio:"Audio/House-1/壁 (piahⁿ).mp3",svg:"Images/House-1/壁 (piahⁿ).svg"},
+  {hokkien:"地板 (tē-pán)",audio:"Audio/House-1/地板 (tē-pán).mp3",svg:"Images/House-1/地板 (tē-pán).svg"}
+];
+
+function positionObject(obj) {
+  const W = gameContainer.clientWidth;
+  const H = gameContainer.clientHeight;
+  obj.element.style.left = (obj.x * W) + "px";
+  obj.element.style.top = (obj.y * H) + "px";
+  obj.element.style.width = (obj.width * W) + "px";
+  obj.element.style.height = (obj.height * H) + "px";
+}
+
+function createHighlight(obj) {
+  const div = document.createElement("div");
+  div.className = "highlight";
+
+  const width = (typeof obj.highlightWidth === 'number')
+    ? obj.highlightWidth * gameContainer.clientWidth
+    : obj.width * gameContainer.clientWidth;
+
+  const height = (typeof obj.highlightHeight === 'number')
+    ? obj.highlightHeight * gameContainer.clientHeight
+    : obj.height * gameContainer.clientHeight;
+
+  let left = obj.x * gameContainer.clientWidth;
+  let top = obj.y * gameContainer.clientHeight;
+
+  if (typeof obj.highlightX === 'number') left += obj.highlightX * gameContainer.clientWidth;
+  if (typeof obj.highlightY === 'number') top += obj.highlightY * gameContainer.clientHeight;
+
+  div.style.left = left + "px";
+  div.style.top = top + "px";
+  div.style.width = width + "px";
+  div.style.height = height + "px";
+
+  gameContainer.appendChild(div);
+}
+
+function updateScore() {
+  document.getElementById('score').innerText = `Score: ${score}/${targetScore}`;
+}
+
+function goToNextLevel() {
+  if(score >= targetScore) window.location.href = 'HiddenObject-Bedroom.html';
+}
+
+function exitToMainMenu() {
+  window.location.href = 'Li-Ho-EN.html';
+}
+
+// tombol suara pake <img> biar audio selalu jalan
+function createActionButtons() {
+  const container = document.getElementById('buttonContainer');
+  container.innerHTML = '';
+  selectedWords = [];
+
+  while(selectedWords.length < 3){
+    const rand = hokkienWords[Math.floor(Math.random()*hokkienWords.length)];
+    if(!selectedWords.includes(rand)) selectedWords.push(rand);
+  }
+
+  selectedWords.forEach(word=>{
+    const btnDiv = document.createElement('div');
+    btnDiv.className = 'action-button';
+    btnDiv.dataset.word = word.hokkien;
+
+    const img = document.createElement('img');
+    img.src = word.svg;
+    btnDiv.appendChild(img);
+
+    const check = document.createElement('div');
+    check.className = 'checkmark-svg';
+    check.innerText = '✔';
+    btnDiv.appendChild(check);
+
+    word._checkElement = check;
+
+    btnDiv.addEventListener('click', ()=>{
+      new Audio(word.audio).play();
+    });
+
+    container.appendChild(btnDiv);
+  });
+}
+
+function createObjects() {
+  Object.values(objectsData).forEach(obj=>{
+    const img = document.createElement('img');
+    img.src = obj.svg;
+    img.className = "object-svg";
+    gameContainer.appendChild(img);
+    obj.element = img;
+    positionObject(obj);
+
+    img.addEventListener('click', ()=>{
+      if(
+        selectedWords.some(word=>obj.name.includes(word.hokkien)) &&
+        !correctObjects.has(obj.name) &&
+        score<targetScore
+      ){
+        correctObjects.add(obj.name);
+        score = Math.min(score+1,targetScore);
+        updateScore();
+        createHighlight(obj);
+        new Audio("Audio/correct.mp3").play();
+
+        // ✅ centang tombol yg sesuai
+        const wordBtn = selectedWords.find(word=>obj.name.includes(word.hokkien));
+        if(wordBtn && wordBtn._checkElement) wordBtn._checkElement.style.display='block';
+
+        if(score>=targetScore){
+          document.getElementById('nextButton').style.display='block';
+          new Audio("Audio/score.mp3").play();
+        }
+      } else {
+        new Audio("Audio/wrong.mp3").play();
+      }
+    });
+  });
+}
+
+window.addEventListener('resize', ()=>{Object.values(objectsData).forEach(positionObject);});
+createObjects();
+createActionButtons();
+updateScore();
+</script>
+</body>
+</html>

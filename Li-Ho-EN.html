@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>LiHo! | Learning Hokkien</title>
+<style>
+  body, html {
+    margin:0; padding:0; height:100%; overflow:hidden; background:#ffffff; font-family:Arial, sans-serif;
+  }
+  /* layar putih & logo intro */
+  #whiteScreen { position:fixed; inset:0; background:#ffffff; z-index:30; }
+  #cover { position:fixed; inset:0; display:flex; justify-content:center; align-items:center; opacity:0; z-index:20; background:#ffffff; }
+  #cover img { max-width:100%; max-height:100%; animation: scaleUp 2s forwards; }
+  @keyframes scaleUp { 0%{transform:scale(0);} 100%{transform:scale(1);} }
+
+  /* canvas utama */
+  #gameCanvas { display:block; width:100%; height:100%; background:#000; cursor:pointer; }
+
+  /* tombol kembali (hanya tampil di settings) */
+  .back-button {
+    position:absolute; top:20px; left:20px; z-index:40; background:rgba(255,255,255,0.9);
+    border:2px solid #333; border-radius:15px; padding:10px 20px; cursor:pointer; font-size:16px; font-weight:bold;
+    transition:all .2s ease; display:none;
+  }
+  .back-button:hover { background:#fff; transform:scale(1.03); }
+</style>
+</head>
+<body>
+
+<!-- intro -->
+<div id="whiteScreen"></div>
+<div id="cover"><img src="Images/Logo.svg" alt="Logo" /></div>
+
+<!-- back button for settings -->
+<div class="back-button" onclick="goBack()">← Back to Menu</div>
+
+<!-- audio -->
+<audio id="bgm" src="Audio/Liho.mp3" loop></audio>
+
+<!-- single canvas -->
+<canvas id="gameCanvas"></canvas>
+
+<script>
+/* === Elements & state === */
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const whiteScreen = document.getElementById('whiteScreen');
+const cover = document.getElementById('cover');
+const bgm = document.getElementById('bgm');
+const backBtn = document.querySelector('.back-button');
+
+let currentPage = 'menu'; // 'menu' or 'settings'
+let backgroundImage = new Image();
+let isImageLoaded = false;
+
+/* Main menu clickable zones (relative) */
+const menuButtons = {
+  play: { x:0.409, y:0.486, width:0.195, height:0.148 },
+  settings: { x:0.436, y:0.666, width:0.144, height:0.109 },
+  exit: { x:0.435, y:0.806, width:0.144, height:0.109 }
+};
+
+/* Settings interactive areas (relative to Setting.svg) */
+const settingAreas = {
+  languageDropdown: { x:0.5, y:0.367, width:0.12, height:0.065 },
+  volumeSlider:     { x:0.41, y:0.62,  width:0.15, height:0.04  },
+  saveButton:       { x:0.4, y:0.72,  width:0.2,  height:0.08  }
+};
+
+let currentLanguage = localStorage.getItem('hokkienGameLanguage') || 'en';
+let currentVolume = parseInt(localStorage.getItem('hokkienGameVolume')) || 75;
+
+/* === Intro flow === */
+/* click white screen -> show logo + start bgm -> after animation + stay -> fade logo and show menu */
+whiteScreen.addEventListener('click', () => {
+  whiteScreen.style.display = 'none';
+  cover.style.opacity = '1';
+
+  // start bgm on user gesture
+  bgm.volume = currentVolume/100; // respect saved volume
+  bgm.play().catch(()=>{ /* autoplay blocked maybe */ });
+
+  const scaleDuration = 2000; // match animation 2s
+  const stayDuration = 1200;
+  const fadeDuration = 600;
+
+  setTimeout(() => {
+    cover.style.transition = `opacity ${fadeDuration}ms ease`;
+    cover.style.opacity = '0';
+    setTimeout(() => {
+      cover.style.display = 'none';
+      loadMenu();
+    }, fadeDuration);
+  }, scaleDuration + stayDuration);
+});
+
+/* === Load & Draw Menu === */
+function loadMenu(){
+  currentPage = 'menu';
+  backBtn.style.display = 'none';
+  backgroundImage.src = 'Images/Mainmenu.svg';
+}
+
+function drawMenu(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  // draw stretched to canvas (object-fit: cover was used before; to approximate, fill)
+  ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+}
+
+/* === Load & Draw Settings === */
+function loadSettings(){
+  currentPage = 'settings';
+  backBtn.style.display = 'block';
+  backgroundImage.src = 'Images/Setting.svg';
+}
+
+function drawSettings(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // Fit the Setting.svg inside canvas similarly to original code (contain)
+  const aspect = backgroundImage.width / backgroundImage.height;
+  let drawW, drawH, drawX, drawY;
+  if (canvas.width / canvas.height > aspect) {
+    drawH = canvas.height;
+    drawW = drawH * aspect;
+    drawX = (canvas.width - drawW) / 2;
+    drawY = 0;
+  } else {
+    drawW = canvas.width;
+    drawH = drawW / aspect;
+    drawX = 0;
+    drawY = (canvas.height - drawH) / 2;
+  }
+  ctx.drawImage(backgroundImage, drawX, drawY, drawW, drawH);
+
+  // draw language selector, volume slider and save button exactly like original
+  // language selector
+  const lang = settingAreas.languageDropdown;
+  const lx = drawX + drawW * lang.x, ly = drawY + drawH * lang.y, lw = drawW * lang.width, lh = drawH * lang.height;
+  ctx.fillStyle = '#6c2d00';
+  ctx.fillRect(lx, ly, lw, lh);
+  ctx.fillStyle = '#fff';
+  ctx.font = `bold ${Math.floor(drawH * 0.035)}px Arial`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(currentLanguage === 'en' ? 'English' : 'Indonesian', lx + lw/2, ly + lh/2);
+
+  // volume slider
+  const vol = settingAreas.volumeSlider;
+  const vx = drawX + drawW * vol.x, vy = drawY + drawH * vol.y, vw = drawW * vol.width, vh = drawH * vol.height;
+  ctx.fillStyle = '#ddd';
+  ctx.fillRect(vx, vy + vh*0.4, vw, vh*0.2);
+  const fillW = (vw * currentVolume) / 100;
+  ctx.fillStyle = '#42c148';
+  ctx.fillRect(vx, vy + vh*0.4, fillW, vh*0.2);
+  const thumbX = vx + fillW - 8, thumbY = vy + vh*0.2, thumbSize = vh*0.6;
+  ctx.fillStyle = '#fff';
+  ctx.strokeStyle = '#42c148';
+  ctx.lineWidth = 2;
+  ctx.fillRect(thumbX, thumbY, 16, thumbSize);
+  ctx.strokeRect(thumbX, thumbY, 16, thumbSize);
+  ctx.fillStyle = '#333';
+  ctx.font = `bold ${Math.floor(drawH * 0.025)}px Arial`;
+  ctx.textAlign = 'center';
+  ctx.fillText(currentVolume + '%', vx + vw + 40, vy + vh/2);
+
+  // save button
+  const save = settingAreas.saveButton;
+  const sx = drawX + drawW * save.x, sy = drawY + drawH * save.y, sw = drawW * save.width, sh = drawH * save.height;
+  ctx.fillStyle = '#8B5E3C';
+  ctx.fillRect(sx, sy, sw, sh);
+  ctx.strokeStyle = '#5C4033';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(sx, sy, sw, sh);
+  ctx.fillStyle = '#fff';
+  ctx.font = `bold ${Math.floor(drawH * 0.035)}px Arial`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('Save Settings', sx + sw/2, sy + sh/2);
+}
+
+/* === Click handling (menu & settings) === */
+canvas.addEventListener('click', (e) => {
+  if (!isImageLoaded) return;
+
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const canvasX = (e.clientX - rect.left) * scaleX;
+  const canvasY = (e.clientY - rect.top) * scaleY;
+  const relX = canvasX / canvas.width;
+  const relY = canvasY / canvas.height;
+
+  if (currentPage === 'menu') {
+    // menu button detection (relative to full canvas)
+    for (const [name, btn] of Object.entries(menuButtons)) {
+      if (relX >= btn.x && relX <= btn.x + btn.width &&
+          relY >= btn.y && relY <= btn.y + btn.height) {
+        if (name === 'play') {
+          window.location.href = 'Pages/Categories.html';
+        } else if (name === 'settings') {
+          loadSettings();
+        } else if (name === 'exit') {
+          if (confirm('Are you sure?')) alert('Thank you for playing! 再見 (Zài jiàn)!');
+        }
+        return;
+      }
+    }
+  } else if (currentPage === 'settings') {
+    // need to compute positions relative to drawn Setting.svg area
+    const aspect = backgroundImage.width / backgroundImage.height;
+    let drawW, drawH, drawX, drawY;
+    if (canvas.width / canvas.height > aspect) {
+      drawH = canvas.height; drawW = drawH * aspect; drawX = (canvas.width - drawW)/2; drawY = 0;
+    } else {
+      drawW = canvas.width; drawH = drawW / aspect; drawX = 0; drawY = (canvas.height - drawH)/2;
+    }
+    const relCanvasX = (canvasX - drawX) / drawW;
+    const relCanvasY = (canvasY - drawY) / drawH;
+
+    // language dropdown
+    const lang = settingAreas.languageDropdown;
+    if (relCanvasX >= lang.x && relCanvasX <= lang.x + lang.width &&
+        relCanvasY >= lang.y && relCanvasY <= lang.y + lang.height) {
+      currentLanguage = (currentLanguage === 'en') ? 'id' : 'en';
+      localStorage.setItem('hokkienGameLanguage', currentLanguage);
+      drawSettings();
+      return;
+    }
+
+    // volume slider
+    const vol = settingAreas.volumeSlider;
+    if (relCanvasX >= vol.x && relCanvasX <= vol.x + vol.width &&
+        relCanvasY >= vol.y && relCanvasY <= vol.y + vol.height) {
+      const clickPos = (relCanvasX - vol.x) / vol.width;
+      currentVolume = Math.max(0, Math.min(100, Math.round(clickPos * 100)));
+      bgm.volume = currentVolume / 100;
+      localStorage.setItem('hokkienGameVolume', currentVolume);
+      drawSettings();
+      return;
+    }
+
+    // save button
+    const save = settingAreas.saveButton;
+    if (relCanvasX >= save.x && relCanvasX <= save.x + save.width &&
+        relCanvasY >= save.y && relCanvasY <= save.y + save.height) {
+      // save settings
+      localStorage.setItem('hokkienGameLanguage', currentLanguage);
+      localStorage.setItem('hokkienGameVolume', currentVolume);
+
+      // behavior requested:
+      // - if language === 'id' -> redirect to Li-Ho-ID.html
+      // - if language === 'en' -> stay on page (show saved feedback)
+      if (currentLanguage === 'id') {
+        // redirect immediately
+        window.location.href = 'Li-Ho-ID.html';
+      } else {
+        // stay on same page
+        alert('Settings saved!');
+      }
+      return;
+    }
+  }
+});
+
+/* === Helpers: resize + image load === */
+function resizeAll() {
+  // set canvas pixel size
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  if (canvas.width !== w || canvas.height !== h) {
+    canvas.width = w;
+    canvas.height = h;
+  }
+  // draw according to current page
+  if (isImageLoaded) {
+    if (currentPage === 'menu') drawMenu();
+    else if (currentPage === 'settings') drawSettings();
+  }
+}
+
+backgroundImage.onload = () => {
+  isImageLoaded = true;
+  resizeAll();
+};
+// start app by showing nothing but white screen; main menu will be loaded after intro
+// pre-load both images so switching is quick (optional)
+const preloadMenu = new Image();
+preloadMenu.src = 'Images/Mainmenu.svg';
+const preloadSettings = new Image();
+preloadSettings.src = 'Images/Setting.svg';
+
+// loadMenu will set backgroundImage.src to main menu when needed
+window.addEventListener('resize', resizeAll);
+
+// apply saved settings
+(function applySaved() {
+  const savedLang = localStorage.getItem('hokkienGameLanguage');
+  if (savedLang) currentLanguage = savedLang;
+  const savedVol = localStorage.getItem('hokkienGameVolume');
+  if (savedVol) currentVolume = parseInt(savedVol, 10);
+  bgm.volume = (currentVolume || 75) / 100;
+})();
+
+// start loop to keep canvas drawn on resize/changes
+(function loop(){
+  resizeAll();
+  requestAnimationFrame(loop);
+})();
+
+/* === Back button handler === */
+function goBack() {
+  loadMenu();                 // panggil fungsi loadMenu() yang udah ada
+  backgroundImage.src = 'Images/Mainmenu.svg'; // pastikan gambar menu dimuat
+}
+
+</script>
+
+</body>
+</html>

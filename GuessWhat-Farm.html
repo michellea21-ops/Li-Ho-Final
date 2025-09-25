@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Guess What | Farm</title>
+  <style>
+    html,body{height:100%;margin:0;overflow:hidden}
+    body{
+      background: url('Images/Animal-2/Background.svg') center/cover no-repeat;
+    }
+
+    .app{
+      width:100%;
+      height:100%;
+      position:relative;
+    }
+
+    .card{
+      position:absolute;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:transform .2s ease;
+    }
+    .card:hover{
+        transform:scale(1.05);
+        cursor:pointer}
+
+    .silhouette img{
+        width:100%;
+        height:100%;
+        object-fit:contain;
+        transition:filter .3s ease, opacity .3s ease}
+    .silhouette.sil{
+        filter:brightness(0) saturate(100%) contrast(120%);
+        opacity:0.9}
+    .silhouette.revealed{
+        filter:none;
+        opacity:1}
+
+    /* UI */
+    #closeBtn{
+      position:absolute;
+      top:12px;
+      right:20px;
+      font-size:30px;
+      background-color: rgb(222, 253, 192);
+      cursor:pointer;
+      border: none;
+      border-radius: 0.5em;
+    }
+
+    /* Tombol sound 2D */
+    #soundBtn{
+      position:absolute;
+      bottom:12px;
+      left:12px;
+      padding:0;
+      border:none;
+      background:none;
+      cursor:pointer;
+    }
+    #soundBtn img{
+      width:60px;
+      height:60px;
+      display:block;
+    }
+
+    #score{
+      position:absolute;
+      top:12px;
+      left:50%;
+      transform:translateX(-50%);
+      font-size:24px;
+      font-weight:bold;
+      color:#000000;
+      text-shadow:0 2px 6px rgba(0,0,0,0.5);
+      background-color: rgb(237, 255, 155);
+      padding: 0.8em 1.5em;
+      border-radius: 1em;
+    }
+
+    #nextLevelBtn{
+      display:none;
+      position:absolute;
+      top:15px;
+      left:20px;
+      padding:10px 16px;
+      border-radius:8px;
+      border:none;
+      cursor:pointer;
+      background:#2b8ae2;
+      color:#fff;
+      font-size:20px;
+      font-weight:bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="app" role="application">
+    <button id="closeBtn" onclick="location.href='Mainmenu.html'">✖</button>
+    <button id="soundBtn">
+    <img src="Images/Sound.svg" alt="sound">
+    </button>
+    <div id="score">Score: 0 / 5</div>
+    <button id="nextLevelBtn" onclick="location.href='GuessWhat-Forest.html'">Next Level ▶</button>
+    <div id="grid"></div>
+  </div>
+
+  <!-- SFX -->
+  <audio id="sfxCorrect" src="Audio/correct.mp3" preload="auto"></audio>
+  <audio id="sfxWrong" src="Audio/wrong.mp3" preload="auto"></audio>
+  <audio id="sfxScore" src="Audio/score.mp3" preload="auto"></audio>
+
+  <script>
+    // daftar hewan + audio clue
+    const items = [
+      {id:'Fish', file:'Images/Animal-2/Fish.svg', audio:'Audio/Animal-2/魚 (hî).mp3', x:1200, y:600, size:70},
+      {id:'Bee', file:'Images/Animal-2/Bee.svg', audio:'Audio/Animal-2/蜜蜂 (bi̍t-phang).mp3', x:1200, y:200, size:50},
+      {id:'Chicken', file:'Images/Animal-2/Chicken.svg', audio:'Audio/Animal-2/雞 (koe).mp3', x:360, y:20, size:60},
+      {id:'Cow', file:'Images/Animal-2/Cow.svg', audio:'Audio/Animal-2/牛 (ngîu).mp3', x:700, y:350, size:100},
+      {id:'Duck', file:'Images/Animal-2/Duck.svg', audio:'Audio/Animal-2/鴨 (ah).mp3', x:900, y:600, size:60},
+      {id:'Goose', file:'Images/Animal-2/Goose.svg', audio:'Audio/Animal-2/鵝 (gîa).mp3', x:1070, y:400, size:70},
+      {id:'Horse', file:'Images/Animal-2/Horse.svg', audio:'Audio/Animal-2/馬 (má).mp3', x:60, y:350, size:150},
+      {id:'Pig', file:'Images/Animal-2/Pig.svg', audio:'Audio/Animal-2/豬 (ti).mp3', x:400, y:400, size:100},
+      {id:'Rabbit', file:'Images/Animal-2/Rabbit.svg', audio:'Audio/Animal-2/兔 (thò·).mp3', x:500, y:600, size:80},
+      {id:'Sheep', file:'Images/Animal-2/Sheep.svg', audio:'Audio/Animal-2/綿羊 (mî-iûⁿ).mp3', x:800, y:400, size:150}
+    ];
+
+    let targetIndex = null;
+    let correctCount = 0;
+    const maxScore = 5;
+    const audioCache = {};
+
+    const grid = document.getElementById('grid');
+    const scoreEl = document.getElementById('score');
+    const soundBtn = document.getElementById('soundBtn');
+    const nextLevelBtn = document.getElementById('nextLevelBtn');
+
+    const sfxCorrect = document.getElementById('sfxCorrect');
+    const sfxWrong = document.getElementById('sfxWrong');
+    const sfxScore = document.getElementById('sfxScore');
+
+    sfxCorrect.volume = 0.9;
+    sfxWrong.volume = 0.9;
+    sfxScore.volume = 1.0;
+
+    // render cards + cache audio clue
+    items.forEach((item, i) => {
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.dataset.index = i;
+      el.style.left = item.x + 'px';
+      el.style.top = item.y + 'px';
+      el.style.width = item.size + 'px';
+      el.style.height = item.size + 'px';
+
+      const sil = document.createElement('div');
+      sil.className = 'silhouette sil';
+      const img = document.createElement('img');
+      img.src = item.file; img.alt = item.id;
+      sil.appendChild(img);
+      el.appendChild(sil);
+
+      el.addEventListener('click', onCardClick);
+      grid.appendChild(el);
+
+      const a = new Audio(item.audio);
+      a.preload = 'auto';
+      audioCache[item.id] = a;
+    });
+
+    function playAudioFor(i){
+      if (i == null) return;
+      const item = items[i];
+      const aud = audioCache[item.id];
+      if (!aud) return;
+      aud.currentTime = 0;
+      aud.play();
+    }
+
+    function pickRandomTarget(){
+      const unrevealed = items.map((it,i)=>({it,i})).filter(x=>{
+        const card = grid.querySelector(`[data-index='${x.i}']`);
+        return card && !card.querySelector('.silhouette').classList.contains('revealed');
+      });
+      if (unrevealed.length === 0) return null;
+      const pick = unrevealed[Math.floor(Math.random()*unrevealed.length)];
+      targetIndex = pick.i;
+      return targetIndex;
+    }
+
+    function startRound(){
+      const t = pickRandomTarget();
+      if (t == null) return;
+      playAudioFor(t);
+    }
+
+    function onCardClick(e){
+      const card = e.currentTarget;
+      const i = Number(card.dataset.index);
+      if (card.querySelector('.silhouette').classList.contains('revealed')) return;
+      if (targetIndex === null) return;
+
+      if (i === targetIndex){
+        revealCard(card);
+        sfxCorrect.currentTime = 0;
+        sfxCorrect.play();
+        correctCount++;
+        scoreEl.textContent = `Score: ${correctCount} / ${maxScore}`;
+
+        if (correctCount >= maxScore){
+          nextLevelBtn.style.display = 'block';
+          sfxScore.currentTime = 0;
+          sfxScore.play();
+          targetIndex = null;
+        } else {
+          targetIndex = null;
+          setTimeout(startRound, 800);
+        }
+      } else {
+        sfxWrong.currentTime = 0;
+        sfxWrong.play();
+        card.animate(
+          [{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}],
+          {duration:400}
+        );
+      }
+    }
+
+    function revealCard(card){
+      card.querySelector('.silhouette').classList.add('revealed');
+    }
+
+    soundBtn.addEventListener('click', ()=>{
+      if (targetIndex == null){
+        startRound();
+      } else {
+        playAudioFor(targetIndex);
+      }
+    });
+  </script>
+</body>
+</html>
