@@ -7,6 +7,16 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+<script>
+// Force load font immediately
+if ('fonts' in document) {
+  document.fonts.load('400 16px "Luckiest Guy"').then(() => {
+    console.log('Luckiest Guy loaded via JavaScript');
+  }).catch(() => {
+    console.error('Failed to load Luckiest Guy via JavaScript');
+  });
+}
+</script>
 <style>
   .luckiest-guy-regular {
     font-family: "Luckiest Guy", sans-serif;
@@ -375,7 +385,30 @@ document.fonts.load('400 16px "Luckiest Guy"').then(() => {
   isFontLoaded = true; // Continue anyway
 });
 
-// Font test removed - Luckiest Guy working properly
+// Add prominent font test
+const fontTest = document.createElement('div');
+fontTest.id = 'fontTest';
+fontTest.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10000;background:yellow;color:black;padding:20px;font-family:"Luckiest Guy",Arial;font-size:24px;border:3px solid red;text-align:center;';
+fontTest.innerHTML = 'FONT TEST<br>"Luckiest Guy"<br>vs Arial fallback<br>Click to remove';
+fontTest.onclick = () => fontTest.remove();
+document.body.appendChild(fontTest);
+
+// Check font availability more aggressively
+let fontCheckCount = 0;
+function checkFont() {
+  fontCheckCount++;
+  const isLoaded = document.fonts.check('24px "Luckiest Guy"');
+  console.log(`Font check ${fontCheckCount}: Luckiest Guy ${isLoaded ? 'LOADED' : 'NOT LOADED'}`);
+
+  if (!isLoaded && fontCheckCount < 50) {
+    setTimeout(checkFont, 200);
+  } else if (isLoaded) {
+    console.log('✅ Luckiest Guy is ready!');
+  } else {
+    console.error('❌ Luckiest Guy failed to load after 10 seconds');
+  }
+}
+checkFont();
 
 // Also test if font is available
 if (!document.fonts.check('16px "Luckiest Guy"')) {
