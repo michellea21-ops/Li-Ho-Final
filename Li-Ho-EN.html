@@ -120,16 +120,20 @@ function drawMenu(){
 
 /* === Load & Draw Settings === */
 function loadSettings(){
+  console.log('loadSettings() called');
   currentPage = 'settings';
   backBtn.style.display = 'block';
   backgroundImage.src = 'Images/Setting.svg';
+  console.log('Settings page loaded, currentPage:', currentPage);
 }
 
 function drawSettings(){
+  console.log('drawSettings() called, isFontLoaded:', isFontLoaded);
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
   // Wait for font to load before drawing text
   if (!isFontLoaded) {
+    console.log('Font not loaded yet, retrying in 100ms');
     setTimeout(() => drawSettings(), 100);
     return;
   }
@@ -221,6 +225,7 @@ canvas.addEventListener('click', (e) => {
         if (name === 'play') {
           window.location.href = 'Pages/Categories.html';
         } else if (name === 'settings') {
+          console.log('Settings button clicked');
           loadSettings();
         } else if (name === 'exit') {
           if (confirm('Are you sure?')) alert('Thank you for playing! 再見 (Zài jiàn)!');
@@ -295,6 +300,7 @@ function resizeAll() {
   }
   // draw according to current page
   if (isImageLoaded) {
+    console.log('resizeAll: currentPage is', currentPage);
     if (currentPage === 'menu') drawMenu();
     else if (currentPage === 'settings') drawSettings();
   }
