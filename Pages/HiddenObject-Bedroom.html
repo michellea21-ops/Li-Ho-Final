@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hidden Object | Bedroom</title>
+<link rel="stylesheet" href="../responsive-fixes.css">
 <style>
 :root {
   --highlight-border: 5px;
@@ -18,12 +19,16 @@ body, html {
   font-family: Arial, sans-serif;
   background: black;
   overflow: hidden;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
 }
 #gameContainer {
   position: relative;
   width: 100%;
   height: 100%;
-  background: url('Images/House-2/Background.svg') no-repeat center/contain;
+  background: url('Images/House-2/Background.svg') no-repeat center/cover;
+  background-size: cover;
+  background-attachment: fixed;
 }
 .next-button {
   position: absolute;

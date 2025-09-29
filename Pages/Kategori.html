@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../responsive-fixes.css">
   <style>
     .luckiest-guy-regular {
       font-family: "Luckiest Guy", sans-serif;
@@ -21,12 +22,30 @@
       background: black;
       overflow: hidden;
       font-family: "Luckiest Guy", sans-serif;
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
     }
     #gameContainer {
       position: relative;
       width: 100%;
       height: 100%;
-      background: url('Kategori.svg') no-repeat center/contain;
+      background: url('Kategori.svg') no-repeat center/cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Responsive design for mobile and tablet */
+    @media (max-width: 768px) {
+      #gameContainer {
+        background-size: cover;
+      }
+    }
+
+    @media (orientation: portrait) {
+      #gameContainer {
+        background-size: cover;
+      }
     }
 
     /* Clickable button zones */

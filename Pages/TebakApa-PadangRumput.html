@@ -3,20 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Guess What | Desert</title>
-  <link rel="stylesheet" href="../responsive-fixes.css">
+  <title>Tebak Apa | Padang Rumput</title>
   <style>
-    html,body{
-      height:100%;
-      margin:0;
-      overflow:hidden;
-      -webkit-text-size-adjust: 100%;
-      -ms-text-size-adjust: 100%;
-    }
+    html,body{height:100%;margin:0;overflow:hidden}
     body{
-      background: url('Images/Animal-9/Background.svg') center/cover no-repeat;
-      background-size: cover;
-      background-attachment: fixed;
+      background: url('Images/Animal-10/Background.svg') center/cover no-repeat;
     }
 
     .app{
@@ -55,7 +46,7 @@
       top:1vh;
       right:2vw;
       font-size:clamp(20px, 4vw, 30px);
-      background-color: rgb(255, 229, 135);
+      background-color: rgb(187, 255, 119);
       cursor:pointer;
       border: none;
       border-radius: 0.5em;
@@ -70,57 +61,55 @@
     /* Tombol sound 2D */
     #soundBtn{
       position:absolute;
-      bottom:2vh;
-      left:2vw;
+      bottom:12px;
+      left:12px;
       padding:0;
       border:none;
       background:none;
       cursor:pointer;
     }
     #soundBtn img{
-      width:clamp(40px, 8vw, 60px);
-      height:clamp(40px, 8vw, 60px);
+      width:60px;
+      height:60px;
       display:block;
     }
 
     #score{
       position:absolute;
-      top:1vh;
+      top:12px;
       left:50%;
       transform:translateX(-50%);
-      font-size:clamp(16px, 3vw, 24px);
+      font-size:24px;
       font-weight:bold;
       color:#000000;
       text-shadow:0 2px 6px rgba(0,0,0,0.5);
-      background-color: rgb(255, 229, 135);
-      padding: 0.6em 1.2em;
+      background-color: rgb(187, 255, 119);
+      padding: 0.8em 1.5em;
       border-radius: 1em;
-      white-space: nowrap;
     }
 
     #nextLevelBtn{
       display:none;
       position:absolute;
-      top:1vh;
-      left:2vw;
-      padding:0.6em 1em;
+      top:15px;
+      left:20px;
+      padding:10px 16px;
       border-radius:8px;
       border:none;
       cursor:pointer;
       background:#2b8ae2;
       color:#fff;
-      font-size:clamp(14px, 2.5vw, 20px);
+      font-size:20px;
       font-weight:bold;
-      white-space: nowrap;
     }
   </style>
 </head>
 <body>
   <div class="app" role="application">
-    <button id="closeBtn" onclick="location.href='Mainmenu.html'">✖</button>
+    <button id="closeBtn" onclick="location.href='Li-Ho-ID.html'">✖</button>
     <button id="soundBtn"><img src="Images/Sound.svg"></button>
-    <div id="score">Score: 0 / 5</div>
-    <button id="nextLevelBtn" onclick="location.href='GuessWhat-River.html'">Next Location ▶</button>
+    <div id="score">Poin: 0 / 5</div>
+    <button id="nextLevelBtn" onclick="location.href='TebakApa-Antartika.html'">Lokasi Berikutnya ▶</button>
     <div id="grid"></div>
   </div>
 
@@ -132,16 +121,16 @@
   <script>
     // daftar hewan + audio clue
     const items = [
-      {id:'Armadillo', file:'Images/Animal-9/Armadillo.svg', audio:'Audio/Animal-9/鲮鲤 (lîng-lí).mp3', x:700, y:600, size:120},
-      {id:'Camel', file:'Images/Animal-9/Camel.svg', audio:'Audio/Animal-9/駱駝 (lo̍k-tô).mp3', x:1400, y:350, size:100},
-      {id:'Donkey', file:'Images/Animal-9/Donkey.svg', audio:'Audio/Animal-9/驢 (lî (lû)).mp3', x:450, y:400, size:120},
-      {id:'Dragonfly', file:'Images/Animal-9/Dragonfly.svg', audio:'Audio/Animal-9/蜻蜓 (chhân-eⁿ).mp3', x:1200, y:370, size:70},
-      {id:'Eagle', file:'Images/Animal-9/Eagle.svg', audio:'Audio/Animal-9/鷹 (eng-á).mp3', x:100, y:30, size:200},
-      {id:'Hyena', file:'Images/Animal-9/Hyena.svg', audio:'Audio/Animal-9/彪 (piu).mp3', x:950, y:400, size:150},
-      {id:'Lizard', file:'Images/Animal-9/Lizard.svg', audio:'Audio/Animal-9/壁虎 (sian-lang-a).mp3', x:370, y:330, size:30},
-      {id:'Ostrich', file:'Images/Animal-9/Ostrich.svg', audio:'Audio/Animal-9/鸵鸟 (tô-chiáu).mp3', x:700, y:300, size:100},
-      {id:'Buffalo', file:'Images/Animal-9/Buffalo.svg', audio:'Audio/Animal-9/水牛 (sui-bueh).mp3', x:50, y:400, size:250},
-      {id:'Snake', file:'Images/Animal-9/Snake.svg', audio:'Audio/Animal-9/蛇 (chôa).mp3', x:1300, y:600, size:70}
+      {id:'Civet', file:'Images/Animal-10/Civet.svg', audio:'Audio/Animal-10/狸猫 (Li[35] Ba[5]).mp3', x:1200, y:150, size:100},
+      {id:'Elephant', file:'Images/Animal-10/Elephant.svg', audio:'Audio/Animal-10/象 (chhīuⁿ).mp3', x:200, y:400, size:300},
+      {id:'Firefly', file:'Images/Animal-10/Firefly.svg', audio:'Audio/Animal-10/螢火蟲 (hóe-kim-ko·).mp3', x:1400, y:400, size:50},
+      {id:'Giraffe', file:'Images/Animal-10/Giraffe.svg', audio:'Audio/Animal-10/長頸鹿 (tn̂g-ām-lo̍k).mp3', x:900, y:200, size:200},
+      {id:'Grasshopper', file:'Images/Animal-10/Grasshopper.svg', audio:'Audio/Animal-10/草蜢 Cau[52] Mi[2].mp3', x:1250, y:550, size:80},
+      {id:'Turkey', file:'Images/Animal-10/Turkey.svg', audio:'Audio/Animal-10/火雞 (hóe-ke).mp3', x:600, y:385, size:150},
+      {id:'Toad', file:'Images/Animal-10/Toad.svg', audio:'Audio/Animal-10/蛤蟆 (chiuⁿ-chû).mp3', x:80, y:420, size:50},
+      {id:'Racoon', file:'Images/Animal-10/Racoon.svg', audio:'Audio/Animal-10/狸貓 (lî-bâ).mp3', x:100, y:150, size:100},
+      {id:'Tiger', file:'Images/Animal-10/Tiger.svg', audio:'Audio/Animal-10/虎 (hó·).mp3', x:700, y:100, size:150},
+      {id:'Zebra', file:'Images/Animal-10/Zebra.svg', audio:'Audio/Animal-10/斑馬 (pan-bé).mp3', x:500, y:200, size:100}
     ];
 
     let targetIndex = null;

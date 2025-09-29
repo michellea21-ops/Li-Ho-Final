@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Font Loading Test</title>
     <style>
         @font-face {
@@ -20,8 +21,25 @@
         }
 
         body {
-            padding: 20px;
-            font-size: 24px;
+            padding: 4vw;
+            font-size: clamp(16px, 4vw, 32px);
+            margin: 0;
+            width: 100%;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+
+        h1, h2 {
+            font-size: clamp(20px, 5vw, 40px);
+        }
+
+        p {
+            font-size: clamp(14px, 3.5vw, 24px);
+            line-height: 1.4;
+        }
+
+        a {
+            word-break: break-all;
         }
 
         .test1 { font-family: 'SuperFuntime1', sans-serif; }
