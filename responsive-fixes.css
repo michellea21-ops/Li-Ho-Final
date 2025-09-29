@@ -330,38 +330,22 @@ body {
   position: absolute !important;
   cursor: pointer !important;
   z-index: 10 !important;
-  transition: transform 0.2s ease !important;
-}
-
-.click-zone:hover {
-  transform: scale(1.02) !important;
 }
 
 /* Game Card Improvements */
 .card {
   position: absolute !important;
   cursor: pointer !important;
-  transition: transform 0.2s ease !important;
   touch-action: manipulation !important;
-}
-
-.card:hover, .card:active {
-  transform: scale(1.05) !important;
 }
 
 /* Object SVG Improvements */
 .object-svg {
   position: absolute !important;
   cursor: pointer !important;
-  transition: all 0.2s ease !important;
   touch-action: manipulation !important;
   max-width: 100% !important;
   height: auto !important;
-}
-
-.object-svg:hover, .object-svg:active {
-  transform: scale(1.1) !important;
-  filter: brightness(1.1) !important;
 }
 
 /* Prevent Unwanted Behaviors */
@@ -427,13 +411,8 @@ button, input, select, textarea, .click-zone, .card, .object-svg {
   flex-direction: column !important;
   align-items: center !important;
   cursor: pointer !important;
-  transition: transform 0.3s ease !important;
   position: relative !important;
   touch-action: manipulation !important;
-}
-
-.action-button:hover, .action-button:active {
-  transform: scale(1.05) !important;
 }
 
 .action-button img {
@@ -456,7 +435,6 @@ button, input, select, textarea, .click-zone, .card, .object-svg {
 }
 
 /* Additional shadow for object SVGs in Hidden Object games when found */
-.object-svg.found,
-.object-svg:hover {
+.object-svg.found {
   filter: drop-shadow(2px 2px 6px rgba(0,0,0,0.3)) brightness(1.1) !important;
 }
