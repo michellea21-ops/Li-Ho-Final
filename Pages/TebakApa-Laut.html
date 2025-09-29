@@ -33,12 +33,14 @@
         height:100%;
         object-fit:contain;
         transition:filter .3s ease, opacity .3s ease}
-    .silhouette.sil{
+    .silhouette.sil img{
         filter:brightness(0) saturate(100%) contrast(120%);
-        opacity:0.9}
-    .silhouette.revealed{
-        filter:none;
-        opacity:1}
+        opacity:0.9;
+    }
+    .silhouette.revealed img{
+        filter: brightness(1) saturate(1) contrast(1) drop-shadow(3px 3px 8px rgba(0,0,0,0.4));
+        opacity:1;
+    }
 
     /* UI */
     #closeBtn{

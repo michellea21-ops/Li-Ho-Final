@@ -385,17 +385,17 @@ button, input, select, textarea, .click-zone, .card, .object-svg {
   display: block !important;
 }
 
-/* Animal Shadow Effects - Only for revealed animals */
-.silhouette.revealed img,
-.card .silhouette.revealed img,
-.revealed .silhouette img {
-  filter: drop-shadow(3px 3px 8px rgba(0,0,0,0.4)) !important;
-}
-
-/* Ensure silhouettes don't get shadows */
+/* Ensure silhouettes stay dark (black) */
 .silhouette.sil img,
 .card .silhouette.sil img {
   filter: brightness(0) saturate(100%) contrast(120%) !important;
+}
+
+/* Animal Shadow Effects - Only for revealed animals (with normal colors) */
+.silhouette.revealed img,
+.card .silhouette.revealed img,
+.revealed .silhouette img {
+  filter: brightness(1) saturate(1) contrast(1) drop-shadow(3px 3px 8px rgba(0,0,0,0.4)) !important;
 }
 
 /* Additional shadow for object SVGs in Hidden Object games when found */
