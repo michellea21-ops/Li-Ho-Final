@@ -157,23 +157,39 @@
     sfxWrong.volume = 0.9;
     sfxScore.volume = 1.0;
 
-    // render cards + cache audio clue - with responsive positioning
+    // render cards + cache audio clue - with better responsive positioning
     function positionCard(el, item) {
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-
-      // Convert fixed pixels to responsive percentages
+      // Convert fixed pixels to responsive percentages with better bounds
       const baseWidth = 1366; // typical design width
       const baseHeight = 768; // typical design height
 
-      const leftPercent = (item.x / baseWidth) * 100;
-      const topPercent = (item.y / baseHeight) * 100;
-      const sizePercent = Math.min((item.size / baseWidth) * 100, (item.size / baseHeight) * 100);
+      // Calculate responsive percentages
+      let leftPercent = (item.x / baseWidth) * 100;
+      let topPercent = (item.y / baseHeight) * 100;
 
-      el.style.left = `${leftPercent}vw`;
-      el.style.top = `${topPercent}vh`;
-      el.style.width = `${Math.max(sizePercent * 0.8, 4)}vw`;
-      el.style.height = `${Math.max(sizePercent * 0.8, 4)}vh`;
+      // Calculate size as percentage of viewport (smaller for mobile)
+      let sizePercent = Math.min((item.size / baseWidth) * 100, (item.size / baseHeight) * 100);
+
+      // Mobile adjustments - keep everything within safe bounds
+      if (window.innerWidth <= 768) {
+        // Scale down positions for mobile to fit better
+        leftPercent = Math.min(leftPercent * 0.85, 85); // Max 85% to leave margin
+        topPercent = Math.min(topPercent * 0.8, 75); // Max 75% to leave margin for UI
+        sizePercent = Math.max(sizePercent * 0.7, 6); // Minimum 6vw for touch targets
+      }
+
+      // Ensure nothing goes outside viewport bounds
+      const finalWidth = Math.min(sizePercent, 20); // Max 20vw
+      const finalHeight = Math.min(sizePercent, 20); // Max 20vh
+
+      // Adjust position if element would overflow
+      leftPercent = Math.min(leftPercent, 95 - (finalWidth * 0.5));
+      topPercent = Math.min(topPercent, 90 - (finalHeight * 0.5));
+
+      el.style.left = `${Math.max(leftPercent, 2)}vw`; // Min 2vw margin
+      el.style.top = `${Math.max(topPercent, 10)}vh`; // Min 10vh margin for UI
+      el.style.width = `${finalWidth}vw`;
+      el.style.height = `${finalHeight}vh`;
     }
 
     items.forEach((item, i) => {
