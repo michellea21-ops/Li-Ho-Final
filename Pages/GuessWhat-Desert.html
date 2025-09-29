@@ -42,12 +42,14 @@
         height:100%;
         object-fit:contain;
         transition:filter .3s ease, opacity .3s ease}
-    .silhouette.sil{
+    .silhouette.sil img{
         filter:brightness(0) saturate(100%) contrast(120%);
-        opacity:0.9}
-    .silhouette.revealed{
-        filter:none;
-        opacity:1}
+        opacity:0.9;
+    }
+    .silhouette.revealed img{
+        filter: drop-shadow(3px 3px 8px rgba(0,0,0,0.4));
+        opacity:1;
+    }
 
     /* UI */
     #closeBtn{
@@ -162,15 +164,46 @@
     sfxWrong.volume = 0.9;
     sfxScore.volume = 1.0;
 
-    // render cards + cache audio clue
+    // render cards + cache audio clue - with better responsive positioning
+    function positionCard(el, item) {
+      // Convert fixed pixels to responsive percentages with better bounds
+      const baseWidth = 1366; // typical design width
+      const baseHeight = 768; // typical design height
+
+      // Calculate responsive percentages
+      let leftPercent = (item.x / baseWidth) * 100;
+      let topPercent = (item.y / baseHeight) * 100;
+
+      // Calculate size as percentage of viewport (smaller for mobile)
+      let sizePercent = Math.min((item.size / baseWidth) * 100, (item.size / baseHeight) * 100);
+
+      // Mobile adjustments - keep everything within safe bounds
+      if (window.innerWidth <= 768) {
+        // Scale down positions for mobile to fit better
+        leftPercent = Math.min(leftPercent * 0.85, 85); // Max 85% to leave margin
+        topPercent = Math.min(topPercent * 0.8, 75); // Max 75% to leave margin for UI
+        sizePercent = Math.max(sizePercent * 0.7, 6); // Minimum 6vw for touch targets
+      }
+
+      // Ensure nothing goes outside viewport bounds
+      const finalWidth = Math.min(sizePercent, 20); // Max 20vw
+      const finalHeight = Math.min(sizePercent, 20); // Max 20vh
+
+      // Adjust position if element would overflow
+      leftPercent = Math.min(leftPercent, 95 - (finalWidth * 0.5));
+      topPercent = Math.min(topPercent, 90 - (finalHeight * 0.5));
+
+      el.style.left = `${Math.max(leftPercent, 2)}vw`; // Min 2vw margin
+      el.style.top = `${Math.max(topPercent, 10)}vh`; // Min 10vh margin for UI
+      el.style.width = `${finalWidth}vw`;
+      el.style.height = `${finalHeight}vh`;
+    }
+
     items.forEach((item, i) => {
       const el = document.createElement('div');
       el.className = 'card';
       el.dataset.index = i;
-      el.style.left = item.x + 'px';
-      el.style.top = item.y + 'px';
-      el.style.width = item.size + 'px';
-      el.style.height = item.size + 'px';
+      positionCard(el, item);
 
       const sil = document.createElement('div');
       sil.className = 'silhouette sil';
@@ -255,6 +288,14 @@
       } else {
         playAudioFor(targetIndex);
       }
+    });
+
+    // Reposition cards on window resize for better responsiveness
+    window.addEventListener('resize', () => {
+      items.forEach((item, i) => {
+        const el = grid.querySelector(`[data-index='${i}']`);
+        if (el) positionCard(el, item);
+      });
     });
   </script>
 </body>

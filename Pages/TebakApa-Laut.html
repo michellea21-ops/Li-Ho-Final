@@ -151,15 +151,35 @@
     sfxWrong.volume = 0.9;
     sfxScore.volume = 1.0;
 
-    // render cards + cache audio clue
+    // render cards + cache audio clue - with better responsive positioning
+    function positionCard(el, item) {
+      const baseWidth = 1366, baseHeight = 768;
+      let leftPercent = (item.x / baseWidth) * 100;
+      let topPercent = (item.y / baseHeight) * 100;
+      let sizePercent = Math.min((item.size / baseWidth) * 100, (item.size / baseHeight) * 100);
+
+      if (window.innerWidth <= 768) {
+        leftPercent = Math.min(leftPercent * 0.85, 85);
+        topPercent = Math.min(topPercent * 0.8, 75);
+        sizePercent = Math.max(sizePercent * 0.7, 6);
+      }
+
+      const finalWidth = Math.min(sizePercent, 20);
+      const finalHeight = Math.min(sizePercent, 20);
+      leftPercent = Math.min(leftPercent, 95 - (finalWidth * 0.5));
+      topPercent = Math.min(topPercent, 90 - (finalHeight * 0.5));
+
+      el.style.left = `${Math.max(leftPercent, 2)}vw`;
+      el.style.top = `${Math.max(topPercent, 10)}vh`;
+      el.style.width = `${finalWidth}vw`;
+      el.style.height = `${finalHeight}vh`;
+    }
+
     items.forEach((item, i) => {
       const el = document.createElement('div');
       el.className = 'card';
       el.dataset.index = i;
-      el.style.left = item.x + 'px';
-      el.style.top = item.y + 'px';
-      el.style.width = item.size + 'px';
-      el.style.height = item.size + 'px';
+      positionCard(el, item);
 
       const sil = document.createElement('div');
       sil.className = 'silhouette sil';
