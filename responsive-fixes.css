@@ -341,3 +341,22 @@ button, input, select, textarea, .click-zone, .card, .object-svg {
   height: auto !important;
   display: block !important;
 }
+
+/* Animal Shadow Effects - Only for revealed animals */
+.silhouette.revealed img,
+.card .silhouette.revealed img,
+.revealed .silhouette img {
+  filter: drop-shadow(3px 3px 8px rgba(0,0,0,0.4)) !important;
+}
+
+/* Ensure silhouettes don't get shadows */
+.silhouette.sil img,
+.card .silhouette.sil img {
+  filter: brightness(0) saturate(100%) contrast(120%) !important;
+}
+
+/* Additional shadow for object SVGs in Hidden Object games when found */
+.object-svg.found,
+.object-svg:hover {
+  filter: drop-shadow(2px 2px 6px rgba(0,0,0,0.3)) brightness(1.1) !important;
+}
