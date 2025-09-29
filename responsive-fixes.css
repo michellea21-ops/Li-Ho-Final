@@ -57,8 +57,8 @@ body {
   .object-svg,
   .action-button,
   button {
-    min-width: 44px !important;
-    min-height: 44px !important;
+    min-width: 6vw !important;
+    min-height: 6vh !important;
     touch-action: manipulation !important;
   }
 
@@ -71,6 +71,7 @@ body {
   body, #gameContainer, .app {
     background-size: cover !important;
     background-attachment: scroll !important; /* Better for mobile */
+    background-position: center center !important;
   }
 
   /* Mobile UI adjustments */
@@ -84,15 +85,37 @@ body {
     width: clamp(120px, 12vw, 200px) !important;
   }
 
-  /* Adjust game elements for mobile */
+  /* Adjust game elements for mobile - better card sizing */
   .card {
     transform-origin: center center !important;
+    min-width: 8vw !important;
+    min-height: 8vh !important;
+    max-width: 20vw !important;
+    max-height: 20vh !important;
+  }
+
+  /* Ensure animal cards are visible and touchable */
+  .card img {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
   }
 
   /* Mobile specific game adjustments */
   #nextLevelBtn {
     font-size: clamp(12px, 3vw, 16px) !important;
     padding: 0.5em 0.8em !important;
+  }
+
+  /* Better spacing for mobile guess what games */
+  .app {
+    padding: 0 !important;
+  }
+
+  /* Mobile score positioning */
+  #score {
+    font-size: clamp(14px, 4vw, 20px) !important;
+    padding: 0.5em 1em !important;
   }
 }
 

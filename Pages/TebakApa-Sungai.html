@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tebak Apa | Sungai</title>
+  <link rel="stylesheet" href="../responsive-fixes.css">
   <style>
     html,body{height:100%;margin:0;overflow:hidden}
     body{
@@ -156,15 +157,30 @@
     sfxWrong.volume = 0.9;
     sfxScore.volume = 1.0;
 
-    // render cards + cache audio clue
+    // render cards + cache audio clue - with responsive positioning
+    function positionCard(el, item) {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      // Convert fixed pixels to responsive percentages
+      const baseWidth = 1366; // typical design width
+      const baseHeight = 768; // typical design height
+
+      const leftPercent = (item.x / baseWidth) * 100;
+      const topPercent = (item.y / baseHeight) * 100;
+      const sizePercent = Math.min((item.size / baseWidth) * 100, (item.size / baseHeight) * 100);
+
+      el.style.left = `${leftPercent}vw`;
+      el.style.top = `${topPercent}vh`;
+      el.style.width = `${Math.max(sizePercent * 0.8, 4)}vw`;
+      el.style.height = `${Math.max(sizePercent * 0.8, 4)}vh`;
+    }
+
     items.forEach((item, i) => {
       const el = document.createElement('div');
       el.className = 'card';
       el.dataset.index = i;
-      el.style.left = item.x + 'px';
-      el.style.top = item.y + 'px';
-      el.style.width = item.size + 'px';
-      el.style.height = item.size + 'px';
+      positionCard(el, item);
 
       const sil = document.createElement('div');
       sil.className = 'silhouette sil';
@@ -249,6 +265,14 @@
       } else {
         playAudioFor(targetIndex);
       }
+    });
+
+    // Reposition cards on window resize for better responsiveness
+    window.addEventListener('resize', () => {
+      items.forEach((item, i) => {
+        const el = grid.querySelector(`[data-index='${i}']`);
+        if (el) positionCard(el, item);
+      });
     });
   </script>
 </body>
