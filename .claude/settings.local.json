@@ -4,7 +4,20 @@
       "Bash(npx vercel:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(for file in Pages/TebakApa-Antartika.html Pages/TebakApa-Got.html Pages/TebakApa-Gurun.html Pages/TebakApa-Hutan.html)",
+      "Bash(do)",
+      "Bash(done)",
+      "Bash(for:*)",
+      "Bash(if grep -q \"silhouette.revealed img\" \"$file\")",
+      "Bash(! grep -q \"brightness(1)\" \"$file\")",
+      "Bash(then)",
+      "Bash(echo \"Fixing: $file\")",
+      "Bash(fi)",
+      "Bash(do if ! grep -q \"brightness(1)\" \"$file\")",
+      "Bash(then echo \"$file\")",
+      "Bash(find:*)",
+      "Bash(git reset:*)"
     ],
     "deny": [],
     "ask": []
