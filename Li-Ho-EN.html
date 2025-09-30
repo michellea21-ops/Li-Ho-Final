@@ -189,6 +189,32 @@ function drawMenu(){
   }
 
   ctx.drawImage(backgroundImage, drawX, drawY, drawW, drawH);
+
+  // Draw button text with Luckiest Guy font
+  ctx.font = `bold ${Math.floor(drawH * 0.08)}px "Luckiest Guy", Arial`;
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.strokeStyle = '#000';
+  ctx.lineWidth = 3;
+
+  // Play button
+  let playX = drawX + drawW * (menuButtons.play.x + menuButtons.play.width/2);
+  let playY = drawY + drawH * (menuButtons.play.y + menuButtons.play.height/2);
+  ctx.strokeText('Play', playX, playY);
+  ctx.fillText('Play', playX, playY);
+
+  // Settings button
+  let settingsX = drawX + drawW * (menuButtons.settings.x + menuButtons.settings.width/2);
+  let settingsY = drawY + drawH * (menuButtons.settings.y + menuButtons.settings.height/2);
+  ctx.strokeText('Settings', settingsX, settingsY);
+  ctx.fillText('Settings', settingsX, settingsY);
+
+  // Exit button
+  let exitX = drawX + drawW * (menuButtons.exit.x + menuButtons.exit.width/2);
+  let exitY = drawY + drawH * (menuButtons.exit.y + menuButtons.exit.height/2);
+  ctx.strokeText('Exit', exitX, exitY);
+  ctx.fillText('Exit', exitX, exitY);
 }
 
 /* === Load & Draw Settings === */
