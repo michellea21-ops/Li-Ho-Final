@@ -156,32 +156,6 @@ function loadMenu(){
 function drawMenu(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-
-  // Draw button text with Luckiest Guy font
-  ctx.font = `bold ${Math.floor(canvas.height * 0.08)}px "Luckiest Guy", Arial`;
-  ctx.fillStyle = '#fff';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.strokeStyle = '#000';
-  ctx.lineWidth = 3;
-
-  // Main button
-  let mainX = canvas.width * (menuButtons.play.x + menuButtons.play.width/2);
-  let mainY = canvas.height * (menuButtons.play.y + menuButtons.play.height/2);
-  ctx.strokeText('Main', mainX, mainY);
-  ctx.fillText('Main', mainX, mainY);
-
-  // Pengaturan button
-  let pengaturanX = canvas.width * (menuButtons.pengaturan.x + menuButtons.pengaturan.width/2);
-  let pengaturanY = canvas.height * (menuButtons.pengaturan.y + menuButtons.pengaturan.height/2);
-  ctx.strokeText('Pengaturan', pengaturanX, pengaturanY);
-  ctx.fillText('Pengaturan', pengaturanX, pengaturanY);
-
-  // Keluar button
-  let keluarX = canvas.width * (menuButtons.exit.x + menuButtons.exit.width/2);
-  let keluarY = canvas.height * (menuButtons.exit.y + menuButtons.exit.height/2);
-  ctx.strokeText('Keluar', keluarX, keluarY);
-  ctx.fillText('Keluar', keluarX, keluarY);
 }
 
 /* pengaturan */
