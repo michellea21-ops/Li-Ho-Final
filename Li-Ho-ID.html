@@ -198,7 +198,7 @@ function drawPengaturan(){
   const sx = drawX+drawW*save.x, sy=drawY+drawH*save.y, sw=drawW*save.width, sh=drawH*save.height;
   ctx.fillStyle='#8B5E3C'; ctx.fillRect(sx, sy, sw, sh);
   ctx.strokeStyle='#5C4033'; ctx.lineWidth=3; ctx.strokeRect(sx, sy, sw, sh);
-  ctx.fillStyle='#fff'; ctx.font=`bold ${Math.floor(drawH*0.035)}px Arial`; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillStyle='#fff'; ctx.font=`bold ${Math.floor(drawH*0.035)}px "Luckiest Guy", Arial`; ctx.textAlign='center'; ctx.textBaseline='middle';
   ctx.fillText('Simpan Pengaturan', sx+sw/2, sy+sh/2);
 }
 
@@ -275,23 +275,22 @@ window.addEventListener('resize',resizeAll);
 
 (function loop(){resizeAll();requestAnimationFrame(loop);})();
 
-/* === Font loading debug === */
-document.fonts.ready.then(() => {
-  console.log('All fonts loaded:', document.fonts.size);
-  document.fonts.forEach(font => {
-    console.log(`Font: ${font.family}, Status: ${font.status}`);
-  });
+/* === Font loading === */
+// Wait for Luckiest Guy font to be loaded before setting isFontLoaded
+document.fonts.load('20px "Luckiest Guy"').then(() => {
+  isFontLoaded = true;
+  console.log('Luckiest Guy font loaded successfully');
 
   // Force redraw after fonts load
   if (isImageLoaded) {
     if (currentPage === 'menu') drawMenu();
     else if (currentPage === 'pengaturan') drawPengaturan();
   }
+}).catch(err => {
+  console.error('Font loading error:', err);
+  // Still set loaded to true so page doesn't hang
+  isFontLoaded = true;
 });
-
-// Google Fonts loads automatically, set as loaded
-isFontLoaded = true;
-console.log('Using Google Fonts Luckiest Guy - automatically loaded');
 
 /* === Back button handler === */
 function goBack() {

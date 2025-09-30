@@ -415,11 +415,17 @@ function goBack() {
 }
 
 /* === Font loading === */
-document.fonts.ready.then(() => {
+// Wait for Luckiest Guy font to be loaded before setting isFontLoaded
+document.fonts.load('20px "Luckiest Guy"').then(() => {
   isFontLoaded = true;
+  console.log('Luckiest Guy font loaded successfully');
   if (isImageLoaded && currentPage === 'settings') {
     drawSettings();
   }
+}).catch(err => {
+  console.error('Font loading error:', err);
+  // Still set loaded to true so page doesn't hang
+  isFontLoaded = true;
 });
 
 </script>
