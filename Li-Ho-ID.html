@@ -4,19 +4,16 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>LiHo! | Belajar Hokkien</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
 <link rel="preload" href="Font/LuckiestGuy-Regular.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="stylesheet" href="responsive-fixes.css">
 <style>
-  /* Local font as fallback if Google Fonts fails */
+  /* Local font - MUST be declared before Google Fonts to take priority */
   @font-face {
     font-family: 'Luckiest Guy';
     src: url('Font/LuckiestGuy-Regular.ttf') format('truetype');
     font-weight: 400;
     font-style: normal;
-    font-display: swap;
+    font-display: block;
   }
 
   .luckiest-guy-regular {

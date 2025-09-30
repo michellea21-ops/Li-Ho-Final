@@ -17,7 +17,12 @@
       "Bash(do if ! grep -q \"brightness(1)\" \"$file\")",
       "Bash(then echo \"$file\")",
       "Bash(find:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(do sed -i '7a\\  <link rel=\"\"preconnect\"\" href=\"\"https://fonts.googleapis.com\"\">\\n  <link rel=\"\"preconnect\"\" href=\"\"https://fonts.gstatic.com\"\" crossorigin>\\n  <link href=\"\"https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap\"\" rel=\"\"stylesheet\"\">\\n  <style>\\n    @font-face {\\n      font-family: ''''Luckiest Guy'''';\\n      src: url(''''../Font/LuckiestGuy-Regular.ttf'''') format(''''truetype'''');\\n      font-weight: 400;\\n      font-style: normal;\\n      font-display: swap;\\n    }\\n  </style>' \"$file\")",
+      "Bash(do sed -i 's/font-family: Arial, sans-serif;/font-family: \"\"Luckiest Guy\"\", Arial, sans-serif;/g' \"$file\")",
+      "Bash(do sed -i 's/html,body{height:100%;margin:0;overflow:hidden}/html,body{height:100%;margin:0;overflow:hidden;font-family:\"\"Luckiest Guy\"\",Arial,sans-serif}/g' \"$file\")",
+      "Bash(do sed -i '/<link rel=\"\"preconnect\"\" href=\"\"https:\\/\\/fonts.googleapis.com\"\">/d; /<link rel=\"\"preconnect\"\" href=\"\"https:\\/\\/fonts.gstatic.com\"\" crossorigin>/d; /<link href=\"\"https:\\/\\/fonts.googleapis.com\\/css2?family=Luckiest+Guy/d' \"$file\")",
+      "Bash(do sed -i 's/font-display: swap;/font-display: block;/g' \"$file\")"
     ],
     "deny": [],
     "ask": []
