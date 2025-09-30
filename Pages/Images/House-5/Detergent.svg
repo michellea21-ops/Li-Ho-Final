@@ -22,6 +22,7 @@
   </defs>
   <g id="Layer_1-2" data-name="Layer 1">
     <g>
+      <path class="cls-2" d="M71,98c1.67-2.33,3.33-4.67,5-7V13c-1.67,2-3.33,4-5,6v79Z"/>
       <rect class="cls-4" y="19" width="71" height="79"/>
       <path class="cls-2" d="M0,19c1.33-2,2.67-4,4-6h72c-1.67,2-3.33,4-5,6H0Z"/>
       <path class="cls-2" d="M41,13l-3,6c11-4.33,22-8.67,33-13l3-6c-11,4.33-22,8.67-33,13Z"/>
