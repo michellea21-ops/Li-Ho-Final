@@ -8,24 +8,24 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="responsive-fixes.css">
-<script>
-// Force load font immediately
-if ('fonts' in document) {
-  document.fonts.load('400 16px "Luckiest Guy"').then(() => {
-    console.log('Luckiest Guy loaded via JavaScript');
-  }).catch(() => {
-    console.error('Failed to load Luckiest Guy via JavaScript');
-  });
-}
-</script>
 <style>
+  /* Local font as fallback if Google Fonts fails */
+  @font-face {
+    font-family: 'Luckiest Guy';
+    src: url('Font/LuckiestGuy-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
   .luckiest-guy-regular {
     font-family: "Luckiest Guy", sans-serif;
     font-weight: 400;
     font-style: normal;
   }
   body, html {
-    margin:0; padding:0; height:100%; overflow:hidden; background:#ffffff; font-family: "Luckiest Guy", sans-serif;
+    margin:0; padding:0; height:100%; overflow:hidden; background:#ffffff;
+    font-family: "Luckiest Guy", Arial, sans-serif !important;
     width: 100%;
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
@@ -67,7 +67,7 @@ if ('fonts' in document) {
 
   /* force font loading */
   * {
-    font-family: "Luckiest Guy", sans-serif !important;
+    font-family: "Luckiest Guy", Arial, sans-serif !important;
   }
 
   /* tombol kembali (hanya tampil di settings) - responsive */
@@ -85,7 +85,7 @@ if ('fonts' in document) {
     font-weight:bold;
     transition:all .2s ease;
     display:none;
-    font-family: "Luckiest Guy", sans-serif !important;
+    font-family: "Luckiest Guy", Arial, sans-serif !important;
     min-width: 120px;
   }
   .back-button:hover { background:#fff; transform:scale(1.03); }
@@ -427,13 +427,6 @@ document.fonts.load('400 16px "Luckiest Guy"').then(() => {
   isFontLoaded = true; // Continue anyway
 });
 
-// Add prominent font test
-const fontTest = document.createElement('div');
-fontTest.id = 'fontTest';
-fontTest.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10000;background:yellow;color:black;padding:20px;font-family:"Luckiest Guy",Arial;font-size:24px;border:3px solid red;text-align:center;';
-fontTest.innerHTML = 'FONT TEST<br>"Luckiest Guy"<br>vs Arial fallback<br>Click to remove';
-fontTest.onclick = () => fontTest.remove();
-document.body.appendChild(fontTest);
 
 // Check font availability more aggressively
 let fontCheckCount = 0;
