@@ -170,8 +170,24 @@ function loadMenu(){
 
 function drawMenu(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  // draw stretched to canvas (object-fit: cover was used before; to approximate, fill)
-  ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+
+  // Draw with proper aspect ratio (object-fit: contain)
+  const aspect = backgroundImage.width / backgroundImage.height;
+  let drawW, drawH, drawX, drawY;
+
+  if (canvas.width / canvas.height > aspect) {
+    drawH = canvas.height;
+    drawW = drawH * aspect;
+    drawX = (canvas.width - drawW) / 2;
+    drawY = 0;
+  } else {
+    drawW = canvas.width;
+    drawH = drawW / aspect;
+    drawX = 0;
+    drawY = (canvas.height - drawH) / 2;
+  }
+
+  ctx.drawImage(backgroundImage, drawX, drawY, drawW, drawH);
 }
 
 /* === Load & Draw Settings === */
