@@ -124,12 +124,9 @@ body {
 @media (max-width: 768px) {
   /* Touch-friendly interactive elements */
   .click-zone,
-  .card,
   .object-svg,
   .action-button,
   button {
-    min-width: 6vw !important;
-    min-height: 6vh !important;
     touch-action: manipulation !important;
   }
 
@@ -156,21 +153,6 @@ body {
     width: clamp(120px, 12vw, 200px) !important;
   }
 
-  /* Adjust game elements for mobile - better card sizing */
-  .card {
-    transform-origin: center center !important;
-    min-width: 8vw !important;
-    min-height: 8vh !important;
-    max-width: 20vw !important;
-    max-height: 20vh !important;
-  }
-
-  /* Ensure animal cards are visible and touchable */
-  .card img {
-    max-width: 100% !important;
-    max-height: 100% !important;
-    object-fit: contain !important;
-  }
 
   /* Mobile specific game adjustments */
   #nextLevelBtn {
@@ -327,25 +309,19 @@ body {
 
 /* Click Zone Enhancements */
 .click-zone {
-  position: absolute !important;
   cursor: pointer !important;
-  z-index: 10 !important;
 }
 
 /* Game Card Improvements */
 .card {
-  position: absolute !important;
   cursor: pointer !important;
   touch-action: manipulation !important;
 }
 
 /* Object SVG Improvements */
 .object-svg {
-  position: absolute !important;
   cursor: pointer !important;
   touch-action: manipulation !important;
-  max-width: 100% !important;
-  height: auto !important;
 }
 
 /* Prevent Unwanted Behaviors */
