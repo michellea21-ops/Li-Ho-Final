@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+<link rel="preload" href="Font/LuckiestGuy-Regular.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="stylesheet" href="responsive-fixes.css">
 <style>
   /* Local font as fallback if Google Fonts fails */
@@ -276,20 +277,50 @@ window.addEventListener('resize',resizeAll);
 (function loop(){resizeAll();requestAnimationFrame(loop);})();
 
 /* === Font loading === */
-// Wait for Luckiest Guy font to be loaded before setting isFontLoaded
-document.fonts.load('20px "Luckiest Guy"').then(() => {
-  isFontLoaded = true;
-  console.log('Luckiest Guy font loaded successfully');
+// Aggressive font loading - try multiple sizes to ensure it loads
+async function loadFont() {
+  try {
+    // Try loading font at multiple sizes
+    await Promise.all([
+      document.fonts.load('12px "Luckiest Guy"'),
+      document.fonts.load('20px "Luckiest Guy"'),
+      document.fonts.load('24px "Luckiest Guy"'),
+      document.fonts.load('bold 20px "Luckiest Guy"')
+    ]);
 
-  // Force redraw after fonts load
-  if (isImageLoaded) {
-    if (currentPage === 'menu') drawMenu();
-    else if (currentPage === 'pengaturan') drawPengaturan();
+    // Verify font is actually available
+    if (document.fonts.check('20px "Luckiest Guy"')) {
+      console.log('Luckiest Guy font loaded and verified');
+      isFontLoaded = true;
+
+      // Force redraw after fonts load
+      if (isImageLoaded) {
+        if (currentPage === 'menu') drawMenu();
+        else if (currentPage === 'pengaturan') drawPengaturan();
+      }
+    } else {
+      console.warn('Font loaded but not available');
+      isFontLoaded = true;
+    }
+  } catch (err) {
+    console.error('Font loading error:', err);
+    isFontLoaded = true;
   }
-}).catch(err => {
-  console.error('Font loading error:', err);
-  // Still set loaded to true so page doesn't hang
-  isFontLoaded = true;
+}
+
+// Start loading immediately
+loadFont();
+
+// Also wait for document.fonts.ready as backup
+document.fonts.ready.then(() => {
+  console.log('All fonts ready');
+  if (!isFontLoaded) {
+    isFontLoaded = true;
+    if (isImageLoaded) {
+      if (currentPage === 'menu') drawMenu();
+      else if (currentPage === 'pengaturan') drawPengaturan();
+    }
+  }
 });
 
 /* === Back button handler === */
