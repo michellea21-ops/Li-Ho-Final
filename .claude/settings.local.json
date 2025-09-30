@@ -22,7 +22,8 @@
       "Bash(do sed -i 's/font-family: Arial, sans-serif;/font-family: \"\"Luckiest Guy\"\", Arial, sans-serif;/g' \"$file\")",
       "Bash(do sed -i 's/html,body{height:100%;margin:0;overflow:hidden}/html,body{height:100%;margin:0;overflow:hidden;font-family:\"\"Luckiest Guy\"\",Arial,sans-serif}/g' \"$file\")",
       "Bash(do sed -i '/<link rel=\"\"preconnect\"\" href=\"\"https:\\/\\/fonts.googleapis.com\"\">/d; /<link rel=\"\"preconnect\"\" href=\"\"https:\\/\\/fonts.gstatic.com\"\" crossorigin>/d; /<link href=\"\"https:\\/\\/fonts.googleapis.com\\/css2?family=Luckiest+Guy/d' \"$file\")",
-      "Bash(do sed -i 's/font-display: swap;/font-display: block;/g' \"$file\")"
+      "Bash(do sed -i 's/font-display: swap;/font-display: block;/g' \"$file\")",
+      "Bash(if ! grep -q '<link rel=\"\"preload\"\"' \"$file\")"
     ],
     "deny": [],
     "ask": []
