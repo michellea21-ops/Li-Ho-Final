@@ -65,8 +65,6 @@ body {
 
 /* Ensure all positioned elements stay within bounds */
 .card {
-  max-width: 20vw !important;
-  max-height: 20vh !important;
   box-sizing: border-box !important;
 }
 
