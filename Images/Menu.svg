@@ -2,6 +2,13 @@
 <svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2409.51 1182.48">
   <defs>
     <style>
+      @font-face {
+        font-family: 'Luckiest Guy';
+        src: url('../Font/LuckiestGuy-Regular.ttf') format('truetype');
+        font-weight: 400;
+        font-style: normal;
+      }
+
       .cls-1 {
         fill: #42c148;
       }
