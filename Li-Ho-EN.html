@@ -398,59 +398,13 @@ function goBack() {
   backgroundImage.src = 'Images/Mainmenu.svg'; // pastikan gambar menu dimuat
 }
 
-/* === Font loading debug === */
+/* === Font loading === */
 document.fonts.ready.then(() => {
-  console.log('All fonts loaded:', document.fonts.size);
-  document.fonts.forEach(font => {
-    console.log(`Font: ${font.family}, Status: ${font.status}`);
-  });
-
-  // Force redraw after fonts load
-  if (isImageLoaded) {
-    if (currentPage === 'menu') drawMenu();
-    else if (currentPage === 'settings') drawSettings();
-  }
-});
-
-// Check if Luckiest Guy font is actually loaded
-document.fonts.load('400 16px "Luckiest Guy"').then(() => {
-  console.log('Luckiest Guy font loaded successfully!');
   isFontLoaded = true;
-
-  // Force redraw after font loads
-  if (isImageLoaded) {
-    if (currentPage === 'menu') drawMenu();
-    else if (currentPage === 'settings') drawSettings();
+  if (isImageLoaded && currentPage === 'settings') {
+    drawSettings();
   }
-}).catch(() => {
-  console.error('Luckiest Guy font failed to load');
-  isFontLoaded = true; // Continue anyway
 });
-
-
-// Check font availability more aggressively
-let fontCheckCount = 0;
-function checkFont() {
-  fontCheckCount++;
-  const isLoaded = document.fonts.check('24px "Luckiest Guy"');
-  console.log(`Font check ${fontCheckCount}: Luckiest Guy ${isLoaded ? 'LOADED' : 'NOT LOADED'}`);
-
-  if (!isLoaded && fontCheckCount < 50) {
-    setTimeout(checkFont, 200);
-  } else if (isLoaded) {
-    console.log('✅ Luckiest Guy is ready!');
-  } else {
-    console.error('❌ Luckiest Guy failed to load after 10 seconds');
-  }
-}
-checkFont();
-
-// Also test if font is available
-if (!document.fonts.check('16px "Luckiest Guy"')) {
-  console.warn('Luckiest Guy font not available yet');
-} else {
-  console.log('Luckiest Guy font is available');
-}
 
 </script>
 
