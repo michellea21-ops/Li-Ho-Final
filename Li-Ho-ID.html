@@ -214,9 +214,9 @@ canvas.addEventListener('click',(e)=>{
   if(currentPage==='menu'){
     for(const [name,btn] of Object.entries(menuButtons)){
       if(relX>=btn.x&&relX<=btn.x+btn.width&&relY>=btn.y&&relY<=btn.y+btn.height){
-        if(name==='main'){window.location.href='Pages/Kategori.html';}
+        if(name==='play'){window.location.href='Pages/Kategori.html';}
         else if(name==='pengaturan'){console.log('Pengaturan button clicked'); loadPengaturan();}
-        else if(name==='keluar'){if(confirm('Yakin keluar?'))alert('Terima kasih sudah bermain! 再見 (Zài jiàn)!');}
+        else if(name==='exit'){if(confirm('Yakin keluar?'))alert('Terima kasih sudah bermain! 再見 (Zài jiàn)!');}
       }
     }
   }else if(currentPage==='pengaturan'){
