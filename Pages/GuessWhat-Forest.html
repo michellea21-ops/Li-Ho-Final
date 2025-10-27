@@ -263,6 +263,11 @@
       }
     });
 
+    // Auto-start the first round when page loads
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(startRound, 500); // Small delay to ensure everything is loaded
+    });
+
   </script>
 </body>
 </html>
